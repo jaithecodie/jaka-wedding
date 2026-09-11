@@ -1,0 +1,2662 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jayabharathi & Prithika — Wedding Invitation</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&family=Mukta+Malar:wght@400;600;700&display=swap"
+    rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            royalIndigo: {
+              800: '#131A2B',
+              900: '#0B0E17'
+            },
+            roseGold: {
+              100: '#FFF8E7',
+              300: '#F5D78B',
+              400: '#E0B863',
+              500: '#B88E39',
+              600: '#8A661C'
+            },
+            cream: '#FAF8F5'
+          },
+          fontFamily: {
+            royal: ['Cinzel Decorative', 'serif'],
+            serif: ['Cormorant Garamond', 'serif'],
+            script: ['Great Vibes', 'cursive'],
+            sans: ['Montserrat', 'sans-serif'],
+            tamil: ['Mukta Malar', 'sans-serif']
+          }
+        }
+      }
+    }
+    // Kept only for backwards-compatible cached pages. The active RSVP handler is
+    // declared at the end of this document and sends data to the Netlify function.
+    async function legacySubmitRSVP(e) {
+      e.preventDefault();
+      const form = e.currentTarget;
+      const submitButton = form.querySelector('button[type="submit"]');
+      const name = document.getElementById('rsvp-name').value.trim();
+      const arrivals = Number(document.getElementById('rsvp-arrivals').value);
+      submitButton.disabled = true;
+      submitButton.textContent = currentLang === 'ta' ? 'உறுதிசெய்கிறது...' : 'Confirming...';
+
+      try {
+        const response = await fetch('/.netlify/functions/rsvp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, arrivals })
+        });
+        if (!response.ok) throw new Error('Unable to save RSVP');
+
+        document.getElementById('rsvp-success-message').textContent = currentLang === 'ta'
+          ? `நன்றி, ${name}. ${arrivals} ${arrivals === 1 ? 'நபருக்கான' : 'நபர்களுக்கான'} உங்கள் முன்பதிவு உறுதி செய்யப்பட்டது.`
+          : `Thank you, ${name}. Your booking for ${arrivals} ${arrivals === 1 ? 'guest is' : 'guests are'} confirmed.`;
+        form.reset();
+        form.classList.add('hidden');
+        document.getElementById('rsvp-success').classList.remove('hidden');
+      } catch (error) {
+        submitButton.disabled = false;
+        submitButton.textContent = currentLang === 'ta' ? 'வருகையை உறுதிசெய்க' : 'Confirm RSVP';
+        alert(currentLang === 'ta' ? 'உங்கள் RSVP-ஐ இப்போது சேமிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.' : 'We could not save your RSVP right now. Please try again.');
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons & Canvas Confetti -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    :root {
+      --silk: #f4eee3;
+      --silk-light: #fbf8f1;
+      --silk-dark: #e2d7c5;
+      --champagne: #c49a62;
+      --champagne-light: #e3c89b;
+      --rose: #b77f79;
+      --rose-light: #d9aaa0;
+      --maroon: #5a2528;
+      --maroon-soft: #7b4b4b;
+      --cocoa: #735d55;
+      --ink: #493d39;
+      --white: #fffdf8;
+      --shadow-dark: rgba(126, 101, 83, .20);
+      --shadow-light: rgba(255, 255, 255, .92);
+      --inner-dark: rgba(126, 101, 83, .14);
+      --gold-glow: rgba(196, 154, 98, .28);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--silk);
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      overscroll-behavior-x: none;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink) !important;
+      font-family: 'Montserrat', sans-serif;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(217, 170, 160, .18), transparent 28%),
+        radial-gradient(circle at 85% 20%, rgba(196, 154, 98, .14), transparent 30%),
+        radial-gradient(circle at 50% 90%, rgba(183, 127, 121, .10), transparent 35%),
+        linear-gradient(135deg, #f8f3ea 0%, #eee5d7 48%, #f8f3ea 100%) !important;
+      overflow-x: hidden;
+      width: 100%;
+      max-width: 100%;
+      overscroll-behavior-x: none;
+    }
+
+    @supports (overflow: clip) {
+
+      html,
+      body {
+        overflow-x: clip;
+      }
+    }
+
+    img,
+    svg,
+    canvas,
+    video {
+      max-width: 100%;
+    }
+
+    #main-content,
+    #main-content section,
+    #intro-overlay {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    @supports (overflow: clip) {
+
+      #main-content,
+      #main-content section,
+      #intro-overlay {
+        overflow-x: clip;
+      }
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9998;
+      opacity: .12;
+      background-image:
+        radial-gradient(rgba(90, 37, 40, .35) .45px, transparent .45px);
+      background-size: 5px 5px;
+      mix-blend-mode: multiply;
+    }
+
+    ::selection {
+      background: var(--champagne);
+      color: white;
+    }
+
+    .font-royal {
+      font-family: 'Cinzel Decorative', serif !important;
+    }
+
+    .font-serif {
+      font-family: 'Cormorant Garamond', serif !important;
+    }
+
+    .font-script {
+      font-family: 'Great Vibes', cursive !important;
+    }
+
+    .font-sans {
+      font-family: 'Montserrat', sans-serif !important;
+    }
+
+    .font-tamil {
+      font-family: 'Mukta Malar', sans-serif !important;
+    }
+
+    .gold-gradient-text {
+      background: linear-gradient(135deg,
+          #8f622c 0%,
+          #c49a62 24%,
+          #f0d8a7 48%,
+          #a9783f 72%,
+          #71451f 100%) !important;
+      -webkit-background-clip: text !important;
+      background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+      color: transparent !important;
+      filter: drop-shadow(0 1px 0 rgba(255, 255, 255, .55));
+    }
+
+    /* ---------------- NEUMORPHIC CORE ---------------- */
+
+    .neumo-surface {
+      background: linear-gradient(145deg, #f8f3ea, #e9dfcf);
+      box-shadow:
+        14px 14px 30px var(--shadow-dark),
+        -14px -14px 30px var(--shadow-light);
+    }
+
+    .indigo-card {
+      position: relative;
+      background:
+        linear-gradient(145deg, rgba(249, 244, 235, .98), rgba(230, 219, 202, .98)) !important;
+      border: 0 !important;
+      border-radius: 28px !important;
+      box-shadow:
+        16px 16px 34px rgba(116, 91, 72, .19),
+        -16px -16px 34px rgba(255, 255, 255, .90),
+        inset 1px 1px 0 rgba(255, 255, 255, .62) !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      color: var(--ink) !important;
+      transition:
+        transform .45s cubic-bezier(.16, 1, .3, 1),
+        box-shadow .45s ease,
+        filter .45s ease;
+    }
+
+    .indigo-card::after {
+      content: "";
+      position: absolute;
+      inset: 1px;
+      border-radius: inherit;
+      pointer-events: none;
+      border: 1px solid rgba(196, 154, 98, .20);
+    }
+
+    .indigo-card:hover {
+      transform: translateY(-7px);
+      box-shadow:
+        20px 20px 42px rgba(116, 91, 72, .22),
+        -18px -18px 40px rgba(255, 255, 255, .94),
+        0 0 35px rgba(196, 154, 98, .08);
+    }
+
+    .indigo-card .text-cream,
+    .indigo-card h3,
+    .indigo-card p,
+    .indigo-card span {
+      color: var(--ink) !important;
+    }
+
+    .indigo-card .text-roseGold-300,
+    .indigo-card .text-roseGold-400 {
+      color: var(--maroon-soft) !important;
+    }
+
+    .indigo-card img {
+      filter:
+        saturate(.92) contrast(.96) brightness(1.04) sepia(.055);
+    }
+
+    .button-image-icon {
+      display: block;
+      width: 18px !important;
+      height: 18px !important;
+      min-width: 18px;
+      max-width: 18px !important;
+      object-fit: contain;
+      object-position: center;
+      flex: 0 0 18px;
+    }
+
+    #main-content {
+      background: transparent !important;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #proclamation {
+      order: 1;
+    }
+
+    #countdown-hero {
+      order: 2;
+    }
+
+    #events-section {
+      order: 3;
+    }
+
+    #main-content footer {
+      order: 4;
+    }
+
+    #main-content>nav {
+      background: rgba(244, 238, 227, .82) !important;
+      border: 0 !important;
+      border-bottom: 1px solid rgba(196, 154, 98, .18) !important;
+      box-shadow:
+        0 12px 28px rgba(116, 91, 72, .12),
+        0 1px 0 rgba(255, 255, 255, .85) inset;
+      backdrop-filter: blur(18px) saturate(110%);
+      -webkit-backdrop-filter: blur(18px) saturate(110%);
+    }
+
+    #main-content>nav a {
+      color: var(--cocoa) !important;
+    }
+
+    #main-content>nav a:hover {
+      color: var(--maroon) !important;
+    }
+
+    #main-content>nav button,
+    button.bg-roseGold-500,
+    a.bg-roseGold-500 {
+      color: #fffaf1 !important;
+      background: linear-gradient(145deg, #caa36d, #aa7d45) !important;
+      border: 0 !important;
+      box-shadow:
+        7px 7px 15px rgba(116, 91, 72, .22),
+        -5px -5px 12px rgba(255, 255, 255, .75);
+      border-radius: 999px !important;
+    }
+
+    #main-content>nav button:hover,
+    button.bg-roseGold-500:hover,
+    a.bg-roseGold-500:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        9px 9px 18px rgba(116, 91, 72, .24),
+        -6px -6px 14px rgba(255, 255, 255, .80);
+    }
+
+    #events-section,
+    #countdown-hero,
+    footer {
+      background:
+        radial-gradient(circle at 20% 20%, rgba(217, 170, 160, .13), transparent 30%),
+        radial-gradient(circle at 80% 80%, rgba(196, 154, 98, .12), transparent 32%),
+        linear-gradient(145deg, #f5eee3, #e8ddcd) !important;
+      border-color: rgba(196, 154, 98, .18) !important;
+      color: var(--ink) !important;
+    }
+
+    #countdown-hero {
+      position: relative;
+      overflow: hidden;
+    }
+
+    #countdown-hero::before {
+      content: "";
+      position: absolute;
+      width: 520px;
+      height: 520px;
+      left: -260px;
+      top: -260px;
+      border-radius: 50%;
+      background: rgba(217, 170, 160, .12);
+      filter: blur(50px);
+      pointer-events: none;
+    }
+
+    #countdown-hero .text-cream,
+    footer .text-cream {
+      color: var(--ink) !important;
+    }
+
+    #proclamation {
+      position: relative;
+      background: transparent !important;
+    }
+
+    #proclamation::before,
+    #proclamation::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(1px);
+    }
+
+    #proclamation::before {
+      width: 300px;
+      height: 300px;
+      top: 12%;
+      left: -140px;
+      background: rgba(217, 170, 160, .13);
+    }
+
+    #proclamation::after {
+      width: 260px;
+      height: 260px;
+      right: -120px;
+      bottom: 10%;
+      background: rgba(196, 154, 98, .12);
+    }
+
+    #intro-overlay {
+      background:
+        radial-gradient(circle at 50% 42%, rgba(196, 154, 98, .15), transparent 25%),
+        linear-gradient(145deg, #f7f1e6, #e6dac8) !important;
+      color: var(--ink) !important;
+    }
+
+    #intro-overlay .text-roseGold-300,
+    #intro-overlay .text-roseGold-400 {
+      color: var(--maroon-soft) !important;
+    }
+
+    #crest-button {
+      background: linear-gradient(145deg, #f8f2e8, #e2d6c4) !important;
+      padding: 15px !important;
+      border: 0 !important;
+      box-shadow:
+        18px 18px 38px rgba(116, 91, 72, .23),
+        -18px -18px 38px rgba(255, 255, 255, .95),
+        inset 1px 1px 0 rgba(255, 255, 255, .8) !important;
+    }
+
+    #crest-button>div {
+      background:
+        radial-gradient(circle at 50% 35%, #fffaf1, #eee3d3) !important;
+      border: 0 !important;
+      box-shadow:
+        inset 9px 9px 18px rgba(126, 101, 83, .12),
+        inset -9px -9px 18px rgba(255, 255, 255, .8) !important;
+    }
+
+    #crest-button svg text {
+      fill: var(--champagne) !important;
+    }
+
+    #crest-button .text-roseGold-300 {
+      color: var(--maroon) !important;
+    }
+
+
+    .animate-lock-glow {
+      animation: neumoGlow 3.2s infinite ease-in-out !important;
+    }
+
+    @keyframes neumoGlow {
+
+      0%,
+      100% {
+        box-shadow:
+          18px 18px 38px rgba(116, 91, 72, .22),
+          -18px -18px 38px rgba(255, 255, 255, .94),
+          0 0 0 rgba(196, 154, 98, 0);
+      }
+
+      50% {
+        box-shadow:
+          18px 18px 38px rgba(116, 91, 72, .22),
+          -18px -18px 38px rgba(255, 255, 255, .94),
+          0 0 34px rgba(196, 154, 98, .24);
+      }
+    }
+
+    #couple-gif {
+      display: block;
+      width: 100%;
+      height: 288px !important;
+      min-height: 0;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      background:
+        radial-gradient(circle at 50% 30%, rgba(217, 170, 160, .26), transparent 35%),
+        linear-gradient(145deg, #eee3d2, #d9ccb9);
+      border-radius: 22px !important;
+      box-shadow:
+        inset 8px 8px 16px rgba(117, 91, 72, .14),
+        inset -8px -8px 16px rgba(255, 255, 255, .80),
+        0 4px 0 rgba(255, 255, 255, .45);
+      object-position: center;
+      transform: none !important;
+      backface-visibility: visible;
+      contain: layout paint;
+      transition: none !important;
+      animation: none !important;
+      will-change: auto;
+    }
+
+    #proclamation .indigo-card:hover #couple-gif {
+      transform: none !important;
+      filter: saturate(.96) contrast(.98) !important;
+      box-shadow: inset 8px 8px 16px rgba(117, 91, 72, .14), inset -8px -8px 16px rgba(255, 255, 255, .80), 0 4px 0 rgba(255, 255, 255, .45) !important;
+    }
+
+    .intro-flower {
+      position: absolute;
+      left: 50%;
+      bottom: 8px;
+      z-index: 1;
+      width: 82%;
+      transform: translateX(-50%);
+      opacity: .82;
+      pointer-events: none;
+      filter: drop-shadow(0 2px 5px rgba(196, 154, 98, .24));
+    }
+
+    #proclamation .indigo-card {
+      padding: 14px !important;
+      border-radius: 34px !important;
+    }
+
+    #proclamation .indigo-card::before {
+      content: "";
+      position: absolute;
+      inset: 7px;
+      border-radius: 29px;
+      border: 1px solid rgba(196, 154, 98, .30);
+      pointer-events: none;
+    }
+
+    #proclamation .indigo-card .text-roseGold-300 {
+      color: var(--maroon-soft) !important;
+    }
+
+    .family-detail {
+      border-top: 1px solid rgba(196, 154, 98, .26);
+      padding-top: .7rem;
+      margin-top: .65rem;
+      color: var(--cocoa);
+      font-size: .68rem;
+      line-height: 1.55;
+      letter-spacing: .03em;
+    }
+
+    .family-detail strong {
+      color: var(--maroon);
+      font-size: .72rem;
+    }
+
+    #events-section .family-detail {
+      display: none;
+    }
+
+    .hero-name-detail {
+      margin-top: .45rem;
+      color: var(--cocoa);
+      font: 600 .68rem/1.55 'Montserrat', sans-serif;
+      letter-spacing: .045em;
+    }
+
+    .hero-name-detail strong {
+      color: var(--maroon);
+      font-size: .7rem;
+    }
+
+    .img-3d-frame {
+      border-radius: 20px !important;
+      transition:
+        transform .55s cubic-bezier(.16, 1, .3, 1),
+        filter .55s ease,
+        box-shadow .55s ease !important;
+    }
+
+    .indigo-card:hover .img-3d-frame {
+      transform: scale(1.025) !important;
+      filter: saturate(.98) brightness(1.06);
+      box-shadow:
+        0 15px 25px rgba(116, 91, 72, .14);
+    }
+
+    .event-visual {
+      width: 100%;
+      height: 11rem;
+      object-fit: cover;
+      border-radius: 20px;
+      box-shadow: 0 13px 24px rgba(90, 37, 40, .18), inset 0 0 0 1px rgba(255, 255, 255, .45);
+    }
+
+    img[alt="3D Animated Engagement Pose"],
+    img[alt="3D Animated Reception Pose"],
+    #flower-canvas {
+      display: none;
+    }
+
+    .indigo-card .bg-roseGold-500\/20,
+    .indigo-card .bg-roseGold-500 {
+      background: linear-gradient(145deg, #ead8bd, #dfc9a8) !important;
+      color: var(--maroon) !important;
+      border: 0 !important;
+      box-shadow:
+        4px 4px 9px rgba(116, 91, 72, .13),
+        -4px -4px 9px rgba(255, 255, 255, .75);
+    }
+
+    .indigo-card a {
+      border: 0 !important;
+    }
+
+    .indigo-card a:not(.bg-roseGold-500) {
+      color: var(--maroon-soft) !important;
+      background: linear-gradient(145deg, #f3eade, #e5d8c6) !important;
+      box-shadow:
+        6px 6px 13px rgba(116, 91, 72, .15),
+        -6px -6px 13px rgba(255, 255, 255, .80);
+    }
+
+    .indigo-card a:not(.bg-roseGold-500):hover {
+      background: linear-gradient(145deg, #eadfce, #f7f1e8) !important;
+      transform: translateY(-2px);
+    }
+
+    #countdown>div,
+    #countdown-display>div {
+      background: linear-gradient(145deg, #f7f0e5, #e6dac9) !important;
+      border: 0 !important;
+      color: var(--ink) !important;
+      box-shadow:
+        10px 10px 20px rgba(116, 91, 72, .17),
+        -10px -10px 20px rgba(255, 255, 255, .90),
+        inset 1px 1px 0 rgba(255, 255, 255, .65);
+    }
+
+    #countdown>div span:first-child,
+    #countdown-display>div span:first-child {
+      color: var(--maroon) !important;
+    }
+
+    #countdown>div span:last-child,
+    #countdown-display>div span:last-child {
+      color: var(--cocoa) !important;
+    }
+
+    .scratch-card {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      isolation: isolate;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .scratch-canvas {
+      position: absolute;
+      inset: 3px;
+      z-index: 2;
+      width: calc(100% - 10px);
+      height: calc(100% - 10px);
+      border-radius: inherit;
+      touch-action: none;
+      cursor: crosshair;
+    }
+
+    .scratch-card.is-scratched .scratch-canvas {
+      pointer-events: none;
+      display: none;
+    }
+
+    .scratch-card.is-scratched {
+      cursor: default;
+    }
+
+    /* Reveal the countdown and event programme only after all three date cards are scratched. */
+    #countdown-reveal,
+    #events-section {
+      display: none;
+    }
+
+    #countdown-hero>.max-w-3xl>.space-y-1:first-child,
+    #countdown {
+      display: none !important;
+    }
+
+    .date-revealed #countdown-reveal {
+      display: block;
+    }
+
+    .date-revealed #events-section {
+      display: block;
+    }
+
+    #save-date-cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: .8rem;
+      width: min(100%, 480px);
+      margin: 0 auto;
+    }
+
+    .save-date-card {
+      min-height: 100px;
+      display: grid;
+      place-items: center;
+      padding: 1rem .45rem;
+      border-radius: 20px;
+      background: linear-gradient(145deg, #f8f1e5, #e4d4bc);
+      box-shadow: 9px 9px 19px rgba(116, 91, 72, .17), -7px -7px 16px rgba(255, 255, 255, .85);
+    }
+
+    .save-date-value {
+      color: var(--maroon);
+      font: 0.9 clamp(3rem, 3vw, 2.05rem)/1.1 'Cinzel Decorative', serif;
+      overflow-wrap: anywhere;
+    }
+
+    .save-date-label {
+      color: var(--cocoa);
+      margin-top: .45rem;
+      font-size: .58rem;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    .scratch-hint {
+      color: var(--cocoa);
+      font-size: .64rem;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    #countdown-reveal {
+      animation: revealCountdown .65s cubic-bezier(.16, 1, .3, 1) both;
+    }
+
+    @keyframes revealCountdown {
+      from {
+        opacity: 0;
+        transform: translateY(14px) scale(.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    #petal-rain-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 35;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    #flower-canvas {
+      background:
+        radial-gradient(circle at center, rgba(196, 154, 98, .15), transparent 42%),
+        linear-gradient(145deg, #e9dfcf, #f8f2e8);
+      box-shadow:
+        inset 8px 8px 18px rgba(116, 91, 72, .13),
+        inset -8px -8px 18px rgba(255, 255, 255, .82);
+    }
+
+    #control-pod {
+      background: linear-gradient(145deg, #f8f2e8, #e4d8c7) !important;
+      border: 0 !important;
+      box-shadow:
+        9px 9px 20px rgba(116, 91, 72, .18),
+        -9px -9px 20px rgba(255, 255, 255, .86) !important;
+      backdrop-filter: none !important;
+    }
+
+    #control-pod .text-roseGold-300,
+    #control-pod button {
+      color: var(--maroon) !important;
+    }
+
+    #control-pod .bg-roseGold-400\/30,
+    #control-pod .bg-roseGold-400 {
+      background: rgba(196, 154, 98, .30) !important;
+    }
+
+    .wave-bar {
+      background: var(--champagne) !important;
+      box-shadow: 0 0 7px rgba(196, 154, 98, .25);
+    }
+
+    .wave-bar {
+      width: 3px;
+      height: 7px;
+      border-radius: 999px;
+      transform-origin: bottom;
+      animation: tunePulse .72s ease-in-out infinite alternate;
+      animation-play-state: paused;
+    }
+
+    #wave-container.is-playing .wave-bar {
+      animation-play-state: running;
+    }
+
+    .wave-bar.bar-2 {
+      animation-delay: -.22s;
+    }
+
+    .wave-bar.bar-3 {
+      animation-delay: -.46s;
+    }
+
+    .wave-bar.bar-4 {
+      animation-delay: -.12s;
+    }
+
+    @keyframes tunePulse {
+      from {
+        transform: scaleY(.7);
+      }
+
+      to {
+        transform: scaleY(2.5);
+      }
+    }
+
+    #rsvp-modal {
+      background: rgba(79, 54, 49, .30) !important;
+      backdrop-filter: blur(12px) saturate(80%);
+      -webkit-backdrop-filter: blur(12px) saturate(80%);
+    }
+
+    #legacy-rsvp-modal {
+      display: none !important;
+    }
+
+    .rsvp-checkmark {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--white);
+      background: linear-gradient(145deg, var(--champagne-light), var(--champagne));
+      box-shadow: 0 10px 25px rgba(196, 154, 98, .32), inset 1px 1px 0 rgba(255, 255, 255, .62);
+      font: 700 32px/1 'Montserrat', sans-serif;
+      animation: rsvpConfirmation .65s cubic-bezier(.16, 1, .3, 1) both;
+    }
+
+    @keyframes rsvpConfirmation {
+      0% {
+        transform: scale(.35) rotate(-18deg);
+        opacity: 0;
+      }
+
+      70% {
+        transform: scale(1.12) rotate(3deg);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1) rotate(0);
+        opacity: 1;
+      }
+    }
+
+    #rsvp-modal>div {
+      background: linear-gradient(145deg, #f8f2e8, #e6dac8) !important;
+      border: 0 !important;
+      color: var(--ink) !important;
+      box-shadow:
+        22px 22px 48px rgba(79, 54, 49, .24),
+        -20px -20px 44px rgba(255, 255, 255, .90);
+    }
+
+    #rsvp-modal .text-cream {
+      color: var(--ink) !important;
+    }
+
+    #rsvp-modal input,
+    #rsvp-modal select {
+      background: linear-gradient(145deg, #e7dccb, #f5eee4) !important;
+      border: 0 !important;
+      color: var(--ink) !important;
+      box-shadow:
+        inset 5px 5px 11px rgba(116, 91, 72, .13),
+        inset -5px -5px 11px rgba(255, 255, 255, .78) !important;
+    }
+
+    #rsvp-modal input:focus,
+    #rsvp-modal select:focus {
+      box-shadow:
+        inset 4px 4px 9px rgba(116, 91, 72, .12),
+        inset -4px -4px 9px rgba(255, 255, 255, .75),
+        0 0 0 2px rgba(196, 154, 98, .20) !important;
+    }
+
+    #rsvp-modal label {
+      color: var(--cocoa) !important;
+    }
+
+    #rsvp-modal button[type="submit"] {
+      background: linear-gradient(145deg, #caa36d, #a9783f) !important;
+      color: #fffaf1 !important;
+      border: 0 !important;
+      box-shadow:
+        8px 8px 17px rgba(116, 91, 72, .20),
+        -6px -6px 13px rgba(255, 255, 255, .75);
+    }
+
+    .rsvp-guest-list {
+      display: grid;
+      gap: .75rem;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: .2rem;
+    }
+
+    .rsvp-guest {
+      border: 1px solid rgba(196, 154, 98, .22);
+      border-radius: 14px;
+      padding: .8rem;
+      background: rgba(255, 255, 255, .36);
+    }
+
+    .rsvp-guest-title {
+      margin: 0 0 .55rem;
+      color: var(--maroon);
+      font-size: .64rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .rsvp-guest-fields {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 108px;
+      gap: .55rem;
+    }
+
+    .rsvp-guest-fields .rsvp-arrival {
+      grid-column: 1 / -1;
+    }
+
+    .golden-ticket {
+      position: relative;
+      overflow: hidden;
+      padding: 1.15rem;
+      border-radius: 18px;
+      color: #3d250b;
+      text-align: left;
+      background:
+        radial-gradient(circle at 18% 16%, rgba(255, 255, 255, .8), transparent 19%),
+        linear-gradient(135deg, #fff3ae 0%, #d89a2c 30%, #fff4bd 57%, #ad7112 100%);
+      box-shadow: 0 14px 26px rgba(126, 84, 15, .24);
+    }
+
+    .golden-ticket::after {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(86, 50, 8, .48);
+      border-radius: 12px;
+      pointer-events: none;
+    }
+
+    .ticket-kicker,
+    .ticket-meta {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      font-size: .6rem;
+      font-weight: 700;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .ticket-name {
+      position: relative;
+      z-index: 1;
+      margin: .6rem 0;
+      font: 700 1.65rem/1.05 'Cormorant Garamond', serif;
+    }
+
+    .ticket-meta {
+      border-top: 1px dashed rgba(86, 50, 8, .55);
+      padding-top: .7rem;
+    }
+
+    .ticket-download {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      margin-top: .9rem;
+      border: 0;
+      border-radius: 9px;
+      padding: .7rem;
+      background: var(--maroon);
+      color: #fff8df;
+      font-size: .63rem;
+      font-weight: 700;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    .button-image-icon {
+      display: block !important;
+      width: 19px !important;
+      height: 19px !important;
+      min-width: 19px !important;
+      max-width: 19px !important;
+      object-fit: contain !important;
+      object-position: center;
+      flex: 0 0 19px;
+      filter: none !important;
+    }
+
+    .bg-roseGold-400 {
+      background-color: var(--champagne) !important;
+    }
+
+    .border-roseGold-400\/20,
+    .border-roseGold-400\/30,
+    .border-roseGold-400\/40,
+    .border-roseGold-400\/50 {
+      border-color: rgba(196, 154, 98, .22) !important;
+    }
+
+    .text-roseGold-300,
+    .text-roseGold-400 {
+      color: var(--maroon-soft) !important;
+    }
+
+    .text-cream\/60,
+    .text-cream\/70,
+    .text-cream\/80,
+    .text-cream\/90,
+    .text-cream {
+      color: var(--ink) !important;
+    }
+
+    footer .gold-gradient-text {
+      filter: drop-shadow(0 1px 0 rgba(255, 255, 255, .7));
+    }
+
+    .reveal-card {
+      opacity: 0;
+      transform: translateY(34px) scale(.985);
+      filter: blur(2px);
+      transition:
+        opacity .9s cubic-bezier(.16, 1, .3, 1),
+        transform .9s cubic-bezier(.16, 1, .3, 1),
+        filter .9s ease;
+    }
+
+    .reveal-card.is-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+
+    .route-road {
+      position: relative;
+      height: 42px;
+      margin: 16px 4px 12px;
+    }
+
+    .route-road::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 6%;
+      right: 6%;
+      height: 4px;
+      border-radius: 999px;
+      background: repeating-linear-gradient(90deg, var(--champagne) 0 14px, transparent 14px 24px);
+      transform: translateY(-50%);
+      opacity: .9;
+    }
+
+    .route-stop {
+      position: absolute;
+      top: 50%;
+      width: 13px;
+      height: 13px;
+      border: 3px solid var(--maroon);
+      border-radius: 50%;
+      background: var(--silk-light);
+      transform: translateY(-50%);
+      z-index: 1;
+    }
+
+    .route-stop.start {
+      left: 4%;
+    }
+
+    .route-stop.end {
+      right: 4%;
+      background: var(--champagne);
+    }
+
+    .route-bus {
+      position: absolute;
+      top: 50%;
+      left: 8%;
+      font-size: 26px;
+      line-height: 1;
+      transform: translateY(-50%);
+      animation: busJourney 5s ease-in-out infinite;
+      filter: drop-shadow(0 4px 3px rgba(90, 37, 40, .22));
+    }
+
+    @keyframes busJourney {
+
+      0%,
+      12% {
+        left: 8%;
+      }
+
+      76%,
+      100% {
+        left: calc(92% - 26px);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .route-bus {
+        animation: none;
+      }
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    @media (max-width: 640px) {
+      #main-content>nav {
+        padding-top: 12px !important;
+        padding-bottom: 12px !important;
+      }
+
+      #proclamation {
+        padding-top: 7rem !important;
+      }
+
+      #proclamation .indigo-card {
+        max-width: 330px;
+      }
+
+      #couple-gif {
+        height: 252px !important;
+      }
+
+      .indigo-card {
+        border-radius: 24px !important;
+        box-shadow:
+          11px 11px 24px rgba(116, 91, 72, .17),
+          -11px -11px 24px rgba(255, 255, 255, .88) !important;
+      }
+
+      #countdown {
+        gap: .55rem !important;
+      }
+
+      #countdown>div {
+        width: 66px !important;
+        padding: 13px 7px !important;
+        border-radius: 18px !important;
+      }
+
+      #save-date-cards {
+        gap: .5rem;
+      }
+
+      .save-date-card {
+        min-height: 132px;
+        padding: .8rem .3rem;
+      }
+
+      .save-date-value {
+        font-size: 1.25rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+
+</head>
+
+<body class="font-sans antialiased selection:bg-roseGold-400 selection:text-royalIndigo-900 overflow-x-hidden">
+
+  <audio id="wedding-audio" loop preload="auto" playsinline>
+    <source src="/assets/audio/intro.mp3?v=20260911" type="audio/mpeg">
+  </audio>
+  <canvas id="petal-rain-canvas" aria-hidden="true"></canvas>
+
+  <div id="intro-overlay"
+    class="fixed inset-0 z-50 bg-royalIndigo-900 flex flex-col items-center justify-center p-6 text-center transition-all duration-1000">
+    <div class="space-y-8 max-w-sm w-full flex flex-col items-center">
+
+      <div class="space-y-1">
+        <span class="text-[10px] uppercase tracking-[0.4em] text-roseGold-300 font-semibold lang-text"
+          data-en="A new chapter begings" data-ta="ஒரு புதிய அத்தியாயம் தொடங்குகிறது.">A new chapter begings</span>
+      </div>
+
+      <div id="crest-button" onpointerdown="primeEntranceMusic()" onclick="openInvitation()"
+        class="relative w-60 h-60 sm:w-68 sm:h-68 rounded-full bg-gradient-to-tr from-roseGold-600 via-roseGold-400 to-roseGold-300 p-1 animate-lock-glow cursor-pointer transition-transform active:scale-95 flex items-center justify-center shadow-2xl group">
+
+        <div
+          class="w-full h-full bg-royalIndigo-900 rounded-full flex flex-col items-center justify-center border-2 border-roseGold-300 relative overflow-hidden">
+
+          <svg class="absolute inset-0 w-full h-full p-2 rotating-circular-text pointer-events-none"
+            viewBox="0 0 200 200">
+            <path id="textPath" d="M 100, 100 m -78, 0 a 78,78 0 1,1 156,0 a 78,78 0 1,1 -156,0" fill="none"></path>
+            <text fill="#F5D78B" font-size="7.8" font-weight="bold" letter-spacing="1.8" class="font-royal">
+              <textPath id="crest-title" href="#textPath" startOffset="0%">
+                JAYABHARATHI WEDS PRITHIKA
+              </textPath>
+            </text>
+          </svg>
+          <img src="/assets/flower.png" alt="" aria-hidden="true" class="intro-flower">
+
+          <div class="z-10 flex flex-col items-center justify-center space-y-1">
+            <svg class="w-10 h-10 text-roseGold-300 drop-shadow-md" viewBox="0 0 64 64" fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M32 20C32 20 26 12 19 12C13.4772 12 9 16.4772 9 22C9 29.5 18 36.5 32 46C46 36.5 55 29.5 55 22C55 16.4772 50.5228 12 45 12C38 12 32 20 32 20Z"
+                fill="url(#goldGradient)" stroke="#E0B863" stroke-width="1.5" />
+              <path d="M16 48C21 44 26 42 32 42C38 42 43 44 48 48M22 52L27 46M42 52L37 46" stroke="#F5D78B"
+                stroke-width="2" stroke-linecap="round" />
+              <defs>
+                <linearGradient id="goldGradient" x1="9" y1="12" x2="55" y2="46" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#F5D78B" />
+                  <stop offset="0.5" stop-color="#E0B863" />
+                  <stop offset="1" stop-color="#B88E39" />
+                </linearGradient>
+              </defs>
+            </svg>
+
+            <span class="font-royal text-2xl sm:text-3xl gold-gradient-text font-black tracking-tighter">ஜே &amp;
+              பி</span>
+            <span class="text-[8px] uppercase tracking-[0.25em] text-roseGold-300 font-bold lang-text"
+              data-en="Tap to Open" data-ta="திறக்க தொடவும்">Tap to Open</span>
+          </div>
+
+        </div>
+      </div>
+
+      <p class="font-serif text-cream/80 text-base italic font-light lang-text"
+        data-en="&quot;Tap the crest to unlock the invitation&quot;"
+        data-ta="&quot;அழைப்பிதழை திறக்க லோகோவை அழுத்தவும்&quot;">"Tap the crest to unlock the invitation"</p>
+
+    </div>
+  </div>
+
+  <div id="control-pod"
+    class="fixed bottom-5 left-5 z-50 bg-royalIndigo-900/90 border border-roseGold-400/40 rounded-full px-3.5 py-2 flex items-center gap-3 backdrop-blur-xl shadow-2xl transition-all">
+
+    <div onclick="toggleMusic()"
+      class="cursor-pointer flex items-center justify-center w-8 h-8 rounded-full hover:scale-105 transition-transform"
+      title="Toggle Music">
+      <div id="wave-container" class="flex items-end gap-1 h-6 px-1 pb-0.5">
+        <div class="wave-bar bar-1"></div>
+        <div class="wave-bar bar-2"></div>
+        <div class="wave-bar bar-3"></div>
+        <div class="wave-bar bar-4"></div>
+      </div>
+    </div>
+
+    <div class="w-[1px] h-4 bg-roseGold-400/30"></div>
+
+    <button onclick="toggleLanguage()"
+      class="text-roseGold-300 font-bold text-[11px] tracking-wider hover:text-white transition-colors flex items-center">
+      <span id="lang-btn-label">தமிழ்</span>
+    </button>
+  </div>
+
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+    <div
+      style="position:absolute;width:260px;height:260px;border-radius:50%;top:12%;left:-110px;background:rgba(217,170,160,.10);filter:blur(55px);">
+    </div>
+    <div
+      style="position:absolute;width:300px;height:300px;border-radius:50%;right:-130px;top:42%;background:rgba(196,154,98,.09);filter:blur(65px);">
+    </div>
+    <div
+      style="position:absolute;width:240px;height:240px;border-radius:50%;left:35%;bottom:-120px;background:rgba(183,127,121,.08);filter:blur(60px);">
+    </div>
+  </div>
+
+  <div id="main-content" class="opacity-0 transition-opacity duration-1000">
+
+    <nav
+      class="fixed top-0 left-0 right-0 z-40 bg-royalIndigo-900/85 backdrop-blur-md border-b border-roseGold-400/20 px-6 py-4">
+      <div class="max-w-5xl mx-auto flex justify-between items-center">
+        <span class="font-royal text-lg tracking-wider gold-gradient-text font-bold">ஜே &amp; பி</span>
+        <div class="hidden md:flex items-center gap-8 text-[11px] uppercase tracking-widest text-cream/80 font-medium">
+          <a href="#proclamation" class="hover:text-roseGold-400 transition-colors lang-text" data-en="Invitation"
+            data-ta="அழைப்பிதழ்">Invitation</a>
+          <a href="#countdown-hero" class="hover:text-roseGold-400 transition-colors lang-text" data-en="Countdown"
+            data-ta="நேரக்கணிப்பு">Countdown</a>
+          <a href="#events-section" class="hover:text-roseGold-400 transition-colors lang-text" data-en="Events"
+            data-ta="நிகழ்வுகள்">Events</a>
+        </div>
+        <!-- <button onclick="openRSVP()" class="bg-roseGold-500 hover:bg-roseGold-600 text-royalIndigo-900 font-bold px-5 py-2 rounded-full text-[11px] uppercase tracking-widest transition-all shadow-lg lang-text" data-en="RSVP" data-ta="உறுதிசெய்க">
+          RSVP
+        </button> -->
+      </div>
+    </nav>
+
+    <section id="proclamation"
+      class="min-h-screen flex flex-col justify-center items-center text-center pt-28 pb-16 px-4">
+      <div class="max-w-3xl space-y-6 reveal-card">
+
+        <span class="text-[11px] uppercase tracking-[0.35em] text-roseGold-400 font-bold block lang-text"
+          data-en="With the divine blessings of our families" data-ta="எங்கள் குடும்பத்தினரின் ஆசியுடன்">With the divine
+          blessings of our families</span>
+
+        <div class="space-y-2">
+          <h1 class="font-royal text-3xl sm:text-5xl md:text-6xl tracking-tight gold-gradient-text font-bold lang-text"
+            data-en="Jayabharathi" data-ta="&#2972;&#3014;&#2991;&#2986;&#3006;&#2992;&#2980;&#3007;">
+            Jayabharathi
+          </h1>
+          <p class="hero-name-detail lang-text" data-html="true"
+            data-en="&lt;strong&gt;S/O&lt;/strong&gt; Mr. Muthurajan &amp;amp; Mrs. Harilakshmi &amp;bull; Tirupur"
+            data-ta="&lt;strong&gt;S/O&lt;/strong&gt; &#2980;&#3007;&#2992;&#3009; &#2990;&#3009;&#2980;&#3021;&#2980;&#3009;&#2992;&#3006;&#2972;&#2985;&#3021; &amp; &#2980;&#3007;&#2992;&#3009;&#2990;&#2980;&#3007; &#3001;&#2992;&#3007;&#2994;&#2965;&#3021;&#2999;&#3021;&#2990;&#3007; &amp;bull; &#2980;&#3007;&#2992;&#3009;&#2986;&#3021;&#2986;&#3010;&#2992;&#3021;">
+            <strong>S/O</strong> Mr. Muthurajan &amp; Mrs. Harilakshmi &bull; Tirupur</p>
+          <div class="font-script text-4xl sm:text-5xl text-roseGold-300 my-1">&amp;</div>
+          <h1 class="font-royal text-3xl sm:text-5xl md:text-6xl tracking-tight gold-gradient-text font-bold lang-text"
+            data-en="Prithika" data-ta="&#2986;&#3007;&#2992;&#3007;&#2980;&#3007;&#2965;&#3006;">
+            Prithika
+          </h1>
+          <p class="hero-name-detail lang-text" data-html="true"
+            data-en="&lt;strong&gt;D/O&lt;/strong&gt; Mr. Pichaimani &amp;amp; Mrs. Sathya &amp;bull; Tirupur"
+            data-ta="&lt;strong&gt;D/O&lt;/strong&gt; &#2980;&#3007;&#2992;&#3009;. &#2986;&#3007;&#2970;&#3021;&#2970;&#3016;&#2990;&#2979;&#3007; &amp;amp; &#2980;&#3007;&#2992;&#3009;&#2990;&#2980;&#3007;. &#2970;&#2980;&#3021;&#2991;&#3006; &amp;bull; &#2980;&#3007;&#2992;&#3009;&#2986;&#3021;&#2986;&#3010;&#2992;&#3021;">
+            <strong>D/O</strong> Mr. Pichaimani &amp; Mrs. Sathya &bull; Tirupur</p>
+        </div>
+
+        <!-- 3D Animated Main Couple Visual Frame -->
+        <div
+          class="my-6 relative max-w-xs sm:max-w-sm mx-auto p-3 indigo-card rounded-3xl border-2 border-roseGold-400/40 shadow-2xl">
+          <img id="couple-gif"
+            src="https://media4.giphy.com/media/v1.Y2lkPTZjMDliOTUyeXVyM2NibjBlN3I1cDJoeG5qejB6Nzh6ejNoaXZtNm1nN20wdW1mNiZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/RMY7DygfrRUtM2E3OI/source.gif"
+            onerror="this.onerror=null; this.src='/assets/couple-placeholder.svg';" alt="Animated Indian wedding couple"
+            class="w-full h-60 sm:h-72 object-cover rounded-2xl shadow-inner img-3d-frame">
+          <div class="mt-3 text-[10px] uppercase tracking-widest text-roseGold-300 font-bold lang-text"
+            data-en="✨ Two Souls • One Journey ✨" data-ta="✨ இரு மனங்கள் • ஒரு பயணம் ✨">✨ Two Souls • One Journey ✨
+          </div>
+        </div>
+
+        <p class="font-serif text-lg sm:text-xl text-cream/90 italic max-w-xl mx-auto font-light leading-relaxed lang-text"
+          data-en="&quot;Cordially invite you to honor us with your presence on our wedding celebration.&quot;"
+          data-ta="&quot;எங்கள் திருமண விழாவில் நீங்கள் கலந்து கொண்டு எங்களை வாழ்த்துமாறு அன்போடு அழைக்கிறோம்.&quot;">
+          "Cordially invite you to honor us with your presence on our wedding celebration."
+        </p>
+
+        <div class="max-w-2xl mx-auto space-y-3">
+          <p class="font-serif text-lg sm:text-xl text-cream/90 italic font-light leading-relaxed lang-text"
+            data-en="Two hearts, two families, and one beautiful promise — we would be honoured to begin our forever surrounded by your love."
+            data-ta="இரு இதயங்கள், இரு குடும்பங்கள், ஒரு அழகிய உறுதி — உங்கள் அன்புடன் எங்கள் வாழ்நாள் பயணத்தை தொடங்குவதில் பெருமகிழ்ச்சி கொள்கிறோம்.">
+            Two hearts, two families, and one beautiful promise — we would be honoured to begin our forever surrounded
+            by your love.</p>
+          <p class="text-xs sm:text-sm text-cream/70 leading-relaxed lang-text"
+            data-en="Join us as prayers become blessings, smiles become memories, and a new chapter begins in the warmth of family and friends."
+            data-ta="பிரார்த்தனைகள் ஆசிகளாக, புன்னகைகள் நினைவுகளாக, குடும்பம் மற்றும் நண்பர்களின் அன்பில் புதிய அத்தியாயம் தொடங்கும் இந்த நாளில் எங்களுடன் இணையுங்கள்.">
+            Join us as prayers become blessings, smiles become memories, and a new chapter begins in the warmth of
+            family and friends.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- HERO SECTION 2: 3D ANIMATED EVENT CARDS -->
+    <section id="events-section" class="py-24 px-4 bg-royalIndigo-800/40 border-y border-roseGold-400/20">
+      <div class="max-w-5xl mx-auto space-y-16">
+
+        <div class="text-center space-y-2 reveal-card">
+          <span class="text-[11px] uppercase tracking-[0.25em] text-roseGold-400 font-bold lang-text"
+            data-en="Auspicious Celebrations" data-ta="சுப நிகழ்வுகள்">Auspicious Celebrations</span>
+          <h2 class="font-royal text-2xl sm:text-4xl text-cream lang-text" data-en="Wedding Events"
+            data-ta="திருமண நிகழ்ச்சிகள்">Wedding Events</h2>
+          <div class="w-12 h-[1px] bg-roseGold-400 mx-auto mt-3"></div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+
+          <!-- Event Card 1: Engagement -->
+          <div class="indigo-card p-5 rounded-3xl space-y-4 reveal-card flex flex-col justify-between">
+            <div class="overflow-hidden rounded-2xl border border-roseGold-400/30">
+              <img
+                src="https://www.chennaieventmanagementservice.com/assets/images/service-details/engagement-events.webp"
+                alt="Couple sharing rings at an engagement ceremony" class="event-visual img-3d-frame">
+            </div>
+            <div class="space-y-3">
+              <div class="overflow-hidden rounded-2xl border border-roseGold-400/30">
+                <img
+                  src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpuc3BmdDRoOWsyOHQ1dnRzbmd1NDRsbWNzeGpnYmR4ZnFiOXUzNiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l0HlO4vdchLBZnxYc/giphy.gif"
+                  alt="3D Animated Engagement Pose" class="w-full h-44 object-cover img-3d-frame">
+              </div>
+              <span
+                class="text-[9px] uppercase tracking-widest bg-roseGold-500/20 text-roseGold-300 font-bold px-3 py-1 rounded-full inline-block lang-text"
+                data-en="Event 01" data-ta="நிகழ்வு 01">Event 01</span>
+              <h3 class="font-royal text-xl text-cream font-bold lang-text" data-en="Engagement Ceremony"
+                data-ta="நிச்சயதார்த்த விழா">Engagement Ceremony</h3>
+              <p class="text-[11px] uppercase tracking-wider text-roseGold-400 font-bold lang-text"
+                data-en="Tuesday, Nov 10, 2026" data-ta="செவ்வாய், நவம்பர் 10, 2026">Tuesday, Nov 10, 2026</p>
+              <p class="text-xs text-cream/70 lang-text" data-en="Time: 10:00 AM – 11:30 AM IST"
+                data-ta="நேரம்: மாலை 03:00 - 04:30">Time: 03:00 PM – 04:30 PM IST</p>
+              <p class="text-xs text-cream/70 lang-text" data-en="Venue: Sri Umiya Mahal, Palayakadu, Tirupur"
+                data-ta="இடம்: ஸ்ரீ உமியா மஹால், பாளையக்காடு, திருப்பூர்">Venue: Sri Umiya Mahal, Palayakadu, Tirupur
+              </p>
+            </div>
+
+            <div class="pt-2 flex flex-col gap-2">
+              <a href="#" onclick="addWeddingToCalendar(); return false;"
+                class="w-full bg-roseGold-500/20 hover:bg-roseGold-500 hover:text-royalIndigo-900 border border-roseGold-400/40 text-roseGold-300 py-2.5 rounded-xl text-[10px] uppercase tracking-wider font-bold transition-all text-center flex items-center justify-center gap-1.5 lang-text"
+                data-html="true"
+                data-en="<img src=&quot;/assets/calendar.png&quot; alt=&quot;&quot; class=&quot;button-image-icon&quot;> Add To Calendar"
+                data-ta="<img src=&quot;/assets/calendar.png&quot; alt=&quot;&quot; class=&quot;button-image-icon&quot;> கேலண்டரில் சேர்க்க">
+                <img src="/assets/calendar.png" alt="" class="button-image-icon"> Add To Calendar
+              </a>
+              <a href="#" onclick="openDirections(); return false;"
+                class="w-full bg-roseGold-500 text-royalIndigo-900 py-2.5 rounded-xl text-[10px] uppercase tracking-wider font-bold hover:bg-roseGold-400 transition-all text-center flex items-center justify-center gap-1.5 lang-text"
+                data-html="true"
+                data-en="<img src=&quot;/assets/location.png&quot; alt=&quot;&quot; class=&quot;button-image-icon&quot;> Get Directions"
+                data-ta="<img src=&quot;/assets/location.png&quot; alt=&quot;&quot; class=&quot;button-image-icon&quot;> வரைபடம் பார்க்க">
+                <img src="/assets/location.png" alt="" class="button-image-icon"> Get Directions
+              </a>
+            </div>
+          </div>
+
+          <!-- Event Card 2: Reception -->
+          <div class="indigo-card p-5 rounded-3xl space-y-4 reveal-card flex flex-col justify-between">
+            <div class="overflow-hidden rounded-2xl border border-roseGold-400/30">
+              <img
+                src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&amp;fit=crop&amp;w=1000&amp;q=85"
+                alt="Elegant wedding reception photography" class="event-visual img-3d-frame">
+            </div>
+            <div class="space-y-3">
+              <div class="overflow-hidden rounded-2xl border border-roseGold-400/30">
+                <img
+                  src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWVqcnA2eHByNGc4Y3AyaGFjc3U1eHBrYW0ybW1sdDgyMHM1eWp6YiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26u4cqiYI30juCOGY/giphy.gif"
+                  alt="3D Animated Reception Pose" class="w-full h-44 object-cover img-3d-frame">
+              </div>
+              <span
+                class="text-[9px] uppercase tracking-widest bg-roseGold-500/20 text-roseGold-300 font-bold px-3 py-1 rounded-full inline-block lang-text"
+                data-en="Event 02" data-ta="நிகழ்வு 02">Event 02</span>
+              <h3 class="font-royal text-xl text-cream font-bold lang-text" data-en="The Grand Reception"
+                data-ta="வரவேற்பு விழா">The Grand Reception</h3>
+              <p class="text-[11px] uppercase tracking-wider text-roseGold-400 font-bold lang-text"
+                data-en="Tuesday, Nov 10, 2026" data-ta="செவ்வாய், நவம்பர் 10, 2026">Tuesday, Nov 10, 2026</p>
+              <p class="text-xs text-cream/70 lang-text" data-en="Time: 6:30 PM Onwards"
+                data-ta="நேரம்: மாலை 6:30 மணி முதல்">Time: 6:30 PM Onwards</p>
+              <p class="text-xs text-cream/70 lang-text" data-en="Venue: Sri Umiya Mahal, Palayakadu, Tirupur"
+                data-ta="இடம்: ஸ்ரீ உமியா மஹால், பாளையக்காடு, திருப்பூர்">Venue: Sri Umiya Mahal, Palayakadu, Tirupur
+              </p>
+            </div>
+
+            <div class="pt-2 flex flex-col gap-2">
+              <a href="#" onclick="addWeddingToCalendar(); return false;"
+                class="w-full bg-roseGold-500/20 hover:bg-roseGold-500 hover:text-royalIndigo-900 border border-roseGold-400/40 text-roseGold-300 py-2.5 rounded-xl text-[10px] uppercase tracking-wider font-bold transition-all text-center flex items-center justify-center gap-1.5 lang-text"
+                data-html="true"
+                data-en="<img src=&quot;/assets/calendar.png&quot; alt=&quot;&quot; class=&quot;button-image-icon&quot;> Add To Calendar"
+                data-ta="<img src=&quot;/assets/calendar.png&quot; alt=&quot;&quot; class=&quot;button-image-icon&quot;> கேலண்டரில் சேர்க்க">
+                <img src="/assets/calendar.png" alt="" class="button-image-icon"> Add To Calendar
+              </a>
+              <a href="#" onclick="openDirections(); return false;"
+                class="w-full bg-roseGold-500 text-royalIndigo-900 py-2.5 rounded-xl text-[10px] uppercase tracking-wider font-bold hover:bg-roseGold-400 transition-all text-center flex items-center justify-center gap-1.5 lang-text"
+                data-html="true"
+                data-en="<img src=&quot;/assets/location.png&quot; alt=&quot;&quot; class=&quot;button-image-icon&quot;> Get Directions"
+                data-ta="<img src=&quot;/assets/location.png&quot; alt=&quot;&quot; class=&quot;button-image-icon&quot;> வரைபடம் பார்க்க">
+                <img src="/assets/location.png" alt="" class="button-image-icon"> Get Directions
+              </a>
+            </div>
+          </div>
+
+          <!-- Event Card 3: Holy Muhurtham -->
+          <div
+            class="indigo-card p-5 rounded-3xl border-2 border-roseGold-400 space-y-4 reveal-card flex flex-col justify-between relative overflow-hidden">
+            <div class="space-y-3 relative z-10">
+
+              <div class="relative w-full h-44 rounded-2xl overflow-hidden bg-royalIndigo-900">
+                <img
+                  src="https://cloudfront.slrlounge.com/wp-content/uploads/2022/12/Indian-wedding-photography-Hindu_Wedding_Ceremony-feature-1200x800.jpg"
+                  alt="Traditional Hindu wedding ceremony beneath a floral mandap" class="event-visual img-3d-frame">
+              </div>
+
+              <span
+                class="text-[9px] uppercase tracking-widest bg-roseGold-500 text-royalIndigo-900 font-bold px-3 py-1 rounded-full inline-block lang-text"
+                data-en="Main Ceremony" data-ta="முக்கிய நிகழ்வு">Main Ceremony</span>
+              <h3 class="font-royal text-xl sm:text-2xl text-cream font-bold lang-text" data-en="Muhurtham"
+                data-ta="முகூர்த்தம்">Muhurtham</h3>
+              <p class="text-[11px] uppercase tracking-wider text-roseGold-400 font-bold lang-text"
+                data-en="Wednesday, Nov 11, 2026" data-ta="புதன், நவம்பர் 11, 2026">Wednesday, Nov 11, 2026</p>
+              <p class="text-xs text-cream/70 lang-text" data-en="Time: 6:00 AM – 7:30 AM IST"
+                data-ta="நேரம்: காலை 04:30 - 06:30">Time: 04:00 AM – 06:30 AM IST</p>
+              <p class="text-xs text-cream/70 lang-text" data-en="Venue: Sri Umiya Mahal, Palayakadu, Tirupur"
+                data-ta="இடம்: ஸ்ரீ உமியா மஹால், பாளையக்காடு, திருப்பூர்">Venue: Sri Umiya Mahal, Palayakadu, Tirupur
+              </p>
+            </div>
+
+            <div class="pt-2 flex flex-col gap-2 relative z-10">
+              <a href="#" onclick="addWeddingToCalendar(); return false;"
+                class="w-full bg-roseGold-500/20 hover:bg-roseGold-500 hover:text-royalIndigo-900 border border-roseGold-400/40 text-roseGold-300 py-2.5 rounded-xl text-[10px] uppercase tracking-wider font-bold transition-all text-center flex items-center justify-center gap-1.5 lang-text"
+                data-html="true"
+                data-en="<img src=&quot;/assets/calendar.png&quot; alt=&quot;&quot; class=&quot;button-image-icon&quot;> Add To Calendar"
+                data-ta="<img src=&quot;/assets/calendar.png&quot; alt=&quot;&quot; class=&quot;button-image-icon&quot;> கேலண்டரில் சேர்க்க">
+                <img src="/assets/calendar.png" alt="" class="button-image-icon"> Add To Calendar
+              </a>
+              <a href="#" onclick="openDirections(); return false;"
+                class="w-full bg-roseGold-500 text-royalIndigo-900 py-2.5 rounded-xl text-[10px] uppercase tracking-wider font-bold hover:bg-roseGold-400 transition-all text-center flex items-center justify-center gap-1.5 lang-text"
+                data-html="true"
+                data-en="<img src=&quot;/assets/location.png&quot; alt=&quot;&quot; class=&quot;button-image-icon&quot;> Get Directions"
+                data-ta="<img src=&quot;/assets/location.png&quot; alt=&quot;&quot; class=&quot;button-image-icon&quot;> வரைபடம் பார்க்க">
+                <img src="/assets/location.png" alt="" class="button-image-icon"> Get Directions
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- <aside class="indigo-card max-w-3xl mx-auto p-6 sm:p-8 text-center reveal-card" aria-label="Bus route information">
+          <span class="text-[10px] uppercase tracking-[0.28em] text-roseGold-400 font-bold lang-text" data-en="Travel by Bus" data-ta="&#2986;&#3015;&#2992;&#3009;&#2984;&#3021;&#2980;&#3009; &#2997;&#2996;&#3007;&#2980;&#3021;&#2980;&#2975;&#2990;&#3021;">Travel by Bus</span>
+          <h3 class="font-royal text-xl sm:text-2xl text-cream mt-2 lang-text" data-en="Bus Route" data-ta="&#2986;&#3015;&#2992;&#3009;&#2984;&#3021;&#2980;&#3009; &#2997;&#2996;&#3007;&#2980;&#3021;&#2980;&#2975;&#2990;&#3021;">Bus Route</h3>
+          <div class="route-road" aria-hidden="true">
+            <span class="route-stop start"></span>
+            <span class="route-bus"></span>
+            <span class="route-stop end"></span>
+          </div>
+          <p class="text-sm sm:text-base font-semibold tracking-wide text-cream lang-text" data-en="TIRUPUR-UTHUKULI MAIN RD, PALAYAKADU" data-ta="&#2980;&#3007;&#2992;&#3009;&#2986;&#3021;&#2986;&#3010;&#2992;&#3021;-&#2954;&#3009;&#2980;&#3021;&#2980;&#3009;&#2965;&#3021;&#2965;&#3009;&#2995;&#3007; &#2990;&#3014;&#2991;&#3007;&#2985;&#3021; RD, &#2986;&#3006;&#2995;&#3016;&#2991;&#2965;&#3021;&#2965;&#3006;&#2975;&#3009;">TIRUPUR-UTHUKULI MAIN RD, PALAYAKADU</p>
+          <p class="text-xs text-cream/70 mt-2 lang-text" data-en="Follow the moving bus to the celebration." data-ta="&#2984;&#2965;&#2992;&#3009;&#2990;&#3021; &#2986;&#3015;&#2992;&#3009;&#2984;&#3021;&#2980;&#3016;&#2986;&#3021; &#2986;&#3007;&#2985;&#3021;&#2980;&#3018;&#2975;&#2992;&#3021;&#2984;&#3021;&#2980;&#3009; &#2997;&#3007;&#2996;&#3006;&#2997;&#3007;&#2993;&#3021;&#2965;&#3009; &#2997;&#3006;&#2992;&#3009;&#2969;&#3021;&#2965;&#2995;&#3021;.">Follow the moving bus to the celebration.</p>
+        </aside> -->
+
+      </div>
+    </section>
+
+    <!-- HERO SECTION 3: LIVE COUNTDOWN -->
+    <section id="countdown-hero" class="py-24 px-4 bg-royalIndigo-900 text-cream">
+      <div class="max-w-3xl mx-auto text-center space-y-6 reveal-card">
+
+        <div class="space-y-1">
+          <!-- <span class="text-[11px] uppercase tracking-[0.25em] text-roseGold-400 font-semibold lang-text" data-en="Counting Down To November 11, 2026" data-ta="நவம்பர் 11, 2026 அன்றைய நேரக்கணிப்பு">Counting Down To November 11, 2026</span> -->
+          <h2 class="font-royal text-2xl sm:text-4xl gold-gradient-text lang-text" data-en="Counting Down To Forever"
+            data-ta="திருமண சுபவேளை">Counting Down To Forever</h2>
+        </div>
+
+        <div id="save-date-intro" class="space-y-2">
+          <span class="text-[10px] uppercase tracking-[0.28em] text-roseGold-400 font-bold">An auspicious date
+            awaits</span>
+          <h2 class="font-royal text-2xl sm:text-4xl gold-gradient-text">Save the Date</h2>
+          <p class="scratch-hint">Scratch every golden card to reveal our wedding date</p>
+        </div>
+        <div></div>
+        <div id="save-date-cards" aria-label="Scratch cards for the wedding date">
+          <div class="save-date-card scratch-card" data-date-part="date" role="button" tabindex="0"
+            aria-label="Scratch to reveal the date">
+            <div class="text-center">
+              <p class="save-date-value">11</p>
+              <p class="save-date-label">Date</p>
+            </div>
+            <canvas class="scratch-canvas" aria-hidden="true"></canvas>
+          </div>
+          <div class="save-date-card scratch-card" data-date-part="month" role="button" tabindex="0"
+            aria-label="Scratch to reveal the month">
+            <div class="text-center">
+              <p class="save-date-value">November</p>
+              <p class="save-date-label">Month</p>
+            </div>
+            <canvas class="scratch-canvas" aria-hidden="true"></canvas>
+          </div>
+          <div class="save-date-card scratch-card" data-date-part="year" role="button" tabindex="0"
+            aria-label="Scratch to reveal the year">
+            <div class="text-center">
+              <p class="save-date-value">2026</p>
+              <p class="save-date-label">Year</p>
+            </div>
+            <canvas class="scratch-canvas" aria-hidden="true"></canvas>
+          </div>
+        </div>
+
+        <div id="countdown-reveal" class="space-y-5">
+          <div class="space-y-2">
+            <h2 class="font-royal text-2xl sm:text-4xl gold-gradient-text lang-text" data-en="Counting Down To Forever"
+              data-ta="திருமண சுபவேளை">Counting Down To Forever</h2>
+            <p class="scratch-hint">November 11, 2026 · 9:30 AM – 10:30 AM IST</p>
+          </div>
+          <div id="countdown-display" class="flex justify-center items-center gap-2 sm:gap-5 max-w-md mx-auto">
+            <div class="p-3 sm:p-5 rounded-2xl w-16 sm:w-24 text-center"><span id="countdown-days"
+                class="font-royal text-xl sm:text-4xl block font-bold">00</span><span
+                class="text-[9px] uppercase tracking-widest mt-0.5 block lang-text" data-en="Days"
+                data-ta="நாட்கள்">Days</span></div>
+            <div class="p-3 sm:p-5 rounded-2xl w-16 sm:w-24 text-center"><span id="countdown-hours"
+                class="font-royal text-xl sm:text-4xl block font-bold">00</span><span
+                class="text-[9px] uppercase tracking-widest mt-0.5 block lang-text" data-en="Hours"
+                data-ta="மணி">Hours</span></div>
+            <div class="p-3 sm:p-5 rounded-2xl w-16 sm:w-24 text-center"><span id="countdown-minutes"
+                class="font-royal text-xl sm:text-4xl block font-bold">00</span><span
+                class="text-[9px] uppercase tracking-widest mt-0.5 block lang-text" data-en="Mins"
+                data-ta="நிமிடம்">Mins</span></div>
+            <div class="p-3 sm:p-5 rounded-2xl w-16 sm:w-24 text-center"><span id="countdown-seconds"
+                class="font-royal text-xl sm:text-4xl block font-bold">00</span><span
+                class="text-[9px] uppercase tracking-widest mt-0.5 block lang-text" data-en="Secs"
+                data-ta="விநாடி">Secs</span></div>
+          </div>
+        </div>
+
+        <div id="countdown" class="flex justify-center items-center gap-2 sm:gap-5 max-w-md mx-auto">
+          <div
+            class="scratch-card bg-royalIndigo-800/80 border border-roseGold-400/30 p-3 sm:p-5 rounded-2xl w-16 sm:w-24 text-center backdrop-blur-md"
+            role="button" tabindex="0"
+            onkeydown="if(event.key === 'Enter' || event.key === ' '){ event.preventDefault(); scratchCountdown(this); }"
+            aria-label="Scratch to reveal days">
+            <span id="days" class="font-royal text-xl sm:text-4xl text-roseGold-400 block font-bold">00</span>
+            <canvas class="scratch-canvas" aria-hidden="true"></canvas>
+            <span class="text-[9px] uppercase tracking-widest text-cream/70 mt-0.5 block lang-text" data-en="Days"
+              data-ta="நாட்கள்">Days</span>
+          </div>
+          <div
+            class="scratch-card bg-royalIndigo-800/80 border border-roseGold-400/30 p-3 sm:p-5 rounded-2xl w-16 sm:w-24 text-center backdrop-blur-md"
+            role="button" tabindex="0"
+            onkeydown="if(event.key === 'Enter' || event.key === ' '){ event.preventDefault(); scratchCountdown(this); }"
+            aria-label="Scratch to reveal hours">
+            <span id="hours" class="font-royal text-xl sm:text-4xl text-roseGold-400 block font-bold">00</span>
+            <canvas class="scratch-canvas" aria-hidden="true"></canvas>
+            <span class="text-[9px] uppercase tracking-widest text-cream/70 mt-0.5 block lang-text" data-en="Hours"
+              data-ta="மணி">Hours</span>
+          </div>
+          <div
+            class="scratch-card bg-royalIndigo-800/80 border border-roseGold-400/30 p-3 sm:p-5 rounded-2xl w-16 sm:w-24 text-center backdrop-blur-md"
+            role="button" tabindex="0"
+            onkeydown="if(event.key === 'Enter' || event.key === ' '){ event.preventDefault(); scratchCountdown(this); }"
+            aria-label="Scratch to reveal minutes">
+            <span id="minutes" class="font-royal text-xl sm:text-4xl text-roseGold-400 block font-bold">00</span>
+            <canvas class="scratch-canvas" aria-hidden="true"></canvas>
+            <span class="text-[9px] uppercase tracking-widest text-cream/70 mt-0.5 block lang-text" data-en="Mins"
+              data-ta="நிமிடம்">Mins</span>
+          </div>
+          <div
+            class="scratch-card bg-royalIndigo-800/80 border border-roseGold-400/30 p-3 sm:p-5 rounded-2xl w-16 sm:w-24 text-center backdrop-blur-md"
+            role="button" tabindex="0"
+            onkeydown="if(event.key === 'Enter' || event.key === ' '){ event.preventDefault(); scratchCountdown(this); }"
+            aria-label="Scratch to reveal seconds">
+            <span id="seconds" class="font-royal text-xl sm:text-4xl text-roseGold-400 block font-bold">00</span>
+            <canvas class="scratch-canvas" aria-hidden="true"></canvas>
+            <span class="text-[9px] uppercase tracking-widest text-cream/70 mt-0.5 block lang-text" data-en="Secs"
+              data-ta="விநாடி">Secs</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 text-center border-t border-roseGold-400/20 bg-royalIndigo-900 text-cream space-y-2">
+      <h3 class="font-royal text-2xl gold-gradient-text lang-text" data-en="Jayabharathi &amp; Prithika"
+        data-ta="&#2972;&#3014;&#2991;&#2986;&#3006;&#2992;&#2980;&#3007; &amp; &#2986;&#3007;&#2992;&#3007;&#2980;&#3007;&#2965;&#3006;">
+        Jayabharathi &amp; Prithika</h3>
+      <p class="text-[10px] uppercase tracking-widest text-cream/60 lang-text"
+        data-en="#JayabharathiWedsPrithika • November 11, 2026" data-ta="#ஜெயபாரதி_பிரித்திகா • நவம்பர் 11, 2026">
+        #JayabharathiWedsPrithika • November 11, 2026</p>
+      <p class="text-[10px] uppercase tracking-widest text-cream/60 lang-text" data-en="With Love JAKA❤️"
+        data-ta="அன்புடன் ஜெகா❤️">With Love JAKA❤️</p>
+    </footer>
+
+  </div>
+
+  <!-- RSVP Modal -->
+  <div id="legacy-rsvp-modal"
+    class="fixed inset-0 z-50 bg-royalIndigo-900/85 backdrop-blur-md hidden items-center justify-center p-4">
+    <div
+      class="indigo-card bg-royalIndigo-900 max-w-md w-full p-6 rounded-2xl relative shadow-2xl space-y-5 border border-roseGold-400/30">
+      <button onclick="closeRSVP()" class="absolute top-4 right-4 text-cream/60 hover:text-cream">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+      <div class="text-center space-y-1">
+        <h3 class="font-royal text-2xl text-cream lang-text" data-en="Confirm Attendance" data-ta="வருகையை உறுதிசெய்க">
+          Confirm Attendance</h3>
+        <p class="text-xs text-cream/60 lang-text" data-en="We look forward to celebrating with you."
+          data-ta="உங்கள் வருகை எங்களுக்கு மகிழ்ச்சி அளிக்கும்.">We look forward to celebrating with you.</p>
+      </div>
+      <form id="legacy-rsvp-form" onsubmit="legacySubmitRSVP(event)" class="space-y-3.5">
+        <div>
+          <label class="block text-[10px] uppercase tracking-wider text-cream/70 mb-1 lang-text"
+            data-en="Your Full Name" data-ta="உங்கள் முழு பெயர்">Your Full Name</label>
+          <input id="legacy-rsvp-name" name="name" type="text" required autocomplete="name"
+            class="w-full px-3.5 py-2.5 rounded-lg border border-roseGold-400/30 bg-royalIndigo-800 text-cream focus:outline-none focus:border-roseGold-500 text-sm">
+        </div>
+        <div>
+          <label class="block text-[10px] uppercase tracking-wider text-cream/70 mb-1 lang-text"
+            data-en="Guests Attending" data-ta="வருகை தரும் நபர்கள்">Guests Attending</label>
+          <select id="legacy-rsvp-arrivals" name="arrivals"
+            class="w-full px-3.5 py-2.5 rounded-lg border border-roseGold-400/30 bg-royalIndigo-800 text-cream focus:outline-none focus:border-roseGold-500 text-sm">
+            <option value="1" class="lang-text" data-en="1 Person" data-ta="1 நபர்">1 Person</option>
+            <option value="2" class="lang-text" data-en="2 Persons" data-ta="2 நபர்கள்">2 Persons</option>
+            <option value="3" class="lang-text" data-en="3 Persons" data-ta="3 நபர்கள்">3 Persons</option>
+            <option value="4" class="lang-text" data-en="4 Persons" data-ta="4 நபர்கள்">4 Persons</option>
+            <option value="5" class="lang-text" data-en="5 Persons" data-ta="5 நபர்கள்">5 Persons</option>
+          </select>
+        </div>
+        <button type="submit"
+          class="w-full bg-roseGold-500 hover:bg-roseGold-600 text-royalIndigo-900 font-bold py-3 rounded-lg text-xs uppercase tracking-widest transition-all shadow-md lang-text"
+          data-en="Confirm RSVP" data-ta="உறுதிசெய்க">
+          Confirm RSVP
+        </button>
+      </form>
+      <div id="legacy-rsvp-success" class="hidden text-center space-y-4 py-3" aria-live="polite">
+        <div class="rsvp-checkmark mx-auto">✓</div>
+        <div class="space-y-1">
+          <h3 class="font-royal text-2xl text-cream lang-text" data-en="Thank You!" data-ta="நன்றி!">Thank You!</h3>
+          <p id="rsvp-success-message" class="text-sm text-cream/75 lang-text"
+            data-en="Your attendance has been confirmed." data-ta="உங்கள் வருகை உறுதி செய்யப்பட்டுள்ளது.">Your
+            attendance has been confirmed.</p>
+        </div>
+        <button type="button" onclick="addWeddingToCalendar()"
+          class="w-full bg-roseGold-500 hover:bg-roseGold-600 text-royalIndigo-900 font-bold py-3 rounded-lg text-xs uppercase tracking-widest transition-all shadow-md lang-text"
+          data-en="Add Wedding to Calendar" data-ta="திருமணத்தை நாட்காட்டியில் சேர்க்கவும்">Add Wedding to
+          Calendar</button>
+        <button type="button" onclick="closeRSVP()"
+          class="text-[10px] uppercase tracking-widest text-roseGold-300 hover:text-cream lang-text" data-en="Close"
+          data-ta="மூடு">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RSVP Modal -->
+  <div id="rsvp-modal"
+    class="fixed inset-0 z-50 bg-royalIndigo-900/85 backdrop-blur-md hidden items-center justify-center p-4"
+    role="dialog" aria-modal="true" aria-labelledby="rsvp-title">
+    <div
+      class="indigo-card bg-royalIndigo-900 max-w-2xl w-full max-h-[90svh] overflow-y-auto p-6 rounded-2xl relative shadow-2xl space-y-5 border border-roseGold-400/30">
+      <button type="button" onclick="closeRSVP()" class="absolute top-4 right-4 text-cream/60 hover:text-cream"
+        aria-label="Close RSVP">
+        <span aria-hidden="true">&times;</span>
+      </button>
+
+      <div id="rsvp-form-panel" class="space-y-5">
+        <div class="text-center space-y-1 pr-7">
+          <h3 id="rsvp-title" class="font-royal text-2xl text-cream lang-text" data-en="Confirm Attendance"
+            data-ta="வருகையை உறுதிப்படுத்தவும்">Confirm Attendance</h3>
+          <p class="text-xs text-cream/60 lang-text" data-en="Tell us who will be joining this celebration."
+            data-ta="இந்த மகிழ்ச்சியான நாளில் கலந்துகொள்பவர்களின் விவரங்களைச் சொல்லுங்கள்.">Tell us who will be joining
+            this celebration.</p>
+        </div>
+
+        <form id="rsvp-form" onsubmit="submitRSVP(event)" class="space-y-4" novalidate>
+          <div>
+            <label for="rsvp-party-size" class="block text-[10px] uppercase tracking-wider text-cream/70 mb-1 lang-text"
+              data-en="Number of persons" data-ta="வருகை தரும் நபர்கள்">Number of persons</label>
+            <select id="rsvp-party-size"
+              class="w-full px-3.5 py-2.5 rounded-lg border border-roseGold-400/30 bg-royalIndigo-800 text-cream focus:outline-none focus:border-roseGold-500 text-sm"
+              aria-describedby="rsvp-party-help">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+            </select>
+            <p id="rsvp-party-help" class="mt-1 text-[10px] text-cream/55 lang-text"
+              data-en="A name, gender, and arrival date are required for every person."
+              data-ta="ஒவ்வொருவருக்கும் பெயர், பாலினம் மற்றும் வருகை தேதி அவசியம்.">A name, gender, and arrival date are
+              required for every person.</p>
+          </div>
+
+          <div id="rsvp-guest-list" class="rsvp-guest-list" aria-live="polite"></div>
+          <p id="rsvp-error" class="hidden text-xs text-red-700" role="alert"></p>
+
+          <button id="rsvp-submit" type="submit"
+            class="w-full bg-roseGold-500 hover:bg-roseGold-600 text-royalIndigo-900 font-bold py-3 rounded-lg text-xs uppercase tracking-widest transition-all shadow-md lang-text"
+            data-en="Confirm RSVP" data-ta="வருகையை உறுதிசெய்க">Confirm RSVP</button>
+        </form>
+      </div>
+
+      <section id="rsvp-success" class="hidden text-center space-y-4 py-3" aria-live="polite">
+        <div class="rsvp-checkmark mx-auto" aria-hidden="true">&#9733;</div>
+        <div class="space-y-1">
+          <h3 class="font-royal text-2xl text-cream lang-text" data-en="A surprise is awaiting"
+            data-ta="ஒரு ஆச்சரியம் காத்திருக்கிறது">A surprise is awaiting</h3>
+          <p class="text-sm text-cream/75 lang-text" data-en="Please check your Pass and save it to redeem it."
+            data-ta="உங்கள் பாஸைப் பார்த்து, அதைச் சேமித்து வைத்துக் கொள்ளுங்கள்.">Please check your Pass and save it to
+            redeem it.</p>
+        </div>
+        <div id="golden-ticket-list" class="grid gap-3 text-left"></div>
+        <button type="button" onclick="closeRSVP()"
+          class="text-[10px] uppercase tracking-widest text-roseGold-300 hover:text-cream lang-text" data-en="Close"
+          data-ta="மூடு">Close</button>
+      </section>
+    </div>
+  </div>
+
+  <!-- JavaScript Engine -->
+  <script>
+    lucide.createIcons();
+
+    // Wedding begins at 9:30 AM IST on 11 November 2026.
+    const eventDate = new Date("2026-11-11T09:30:00+05:30").getTime();
+
+    const WEDDING_VENUE = 'Sri Umiya Mahal, 4976+VJ7, Pillayar Kovil St, Uthukuli Rd, Palayakadu, Tiruppur, Tamil Nadu 641601';
+
+    function navigateToExternalApp(url) {
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+      if (isMobile) {
+        // The invitation is inside a same-origin iframe; use the top-level page
+        // so Android/iOS can hand the link to the installed calendar/maps app.
+        try {
+          window.top.location.href = url;
+        } catch {
+          window.location.href = url;
+        }
+      } else {
+        window.open(url, '_blank', 'noopener');
+      }
+    }
+
+    function addWeddingToCalendar() {
+      const url = new URL('https://calendar.google.com/calendar/render');
+      url.searchParams.set('action', 'TEMPLATE');
+      url.searchParams.set('text', "Jayabharathi & Prithika's Wedding");
+      // 08:00–09:30 IST in UTC, so the event is accurate for every visitor.
+      url.searchParams.set('dates', '20261111T023000Z/20261111T040000Z');
+      url.searchParams.set('ctz', 'Asia/Kolkata');
+      url.searchParams.set('details', "Wedding celebration at Sri Umiya Mahal. Please set a daily reminder from 4 November.");
+      url.searchParams.set('location', WEDDING_VENUE);
+      // This opens a pre-filled Google Calendar event; it never creates an ICS download.
+      navigateToExternalApp(url.toString());
+    }
+
+    function openDirections() {
+      const isAppleDevice = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const destination = encodeURIComponent(WEDDING_VENUE);
+      const directionsUrl = isAppleDevice
+        ? `https://maps.apple.com/?dirflg=d&daddr=${destination}`
+        : `https://www.google.com/maps/dir/?api=1&destination=${destination}&travelmode=driving&dir_action=navigate`;
+      navigateToExternalApp(directionsUrl);
+    }
+
+    // Couple animation asset:
+    // Put your preferred GIF/WebP at ./assets/couple.gif
+    // or change this path to your own image/GIF.
+    const coupleImage = document.getElementById("couple-gif");
+    if (coupleImage) {
+      coupleImage.loading = "eager";
+      coupleImage.decoding = "async";
+    }
+
+    // Live Countdown Timer
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const diff = eventDate - now;
+
+      if (diff > 0) {
+        document.getElementById("countdown-days").innerText = String(Math.floor(diff / (1000 * 60 * 60 * 24))).padStart(2, '0');
+        document.getElementById("countdown-hours").innerText = String(Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+        document.getElementById("countdown-minutes").innerText = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+        document.getElementById("countdown-seconds").innerText = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, '0');
+      }
+    }
+    updateCountdown();
+    window.setInterval(updateCountdown, 1000);
+
+    // Scroll Observer for Animated Cards
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.reveal-card').forEach(el => observer.observe(el));
+
+    // Audio & Wave Bar Controller
+    let isPlaying = false;
+    const audio = document.getElementById("wedding-audio");
+    const waveContainer = document.getElementById("wave-container");
+    audio.volume = 0.36;
+
+    function syncMusicState() {
+      isPlaying = !audio.paused;
+      waveContainer.classList.toggle("is-playing", isPlaying);
+    }
+
+    audio.addEventListener("play", syncMusicState);
+    audio.addEventListener("pause", syncMusicState);
+    audio.addEventListener("ended", syncMusicState);
+
+    function toggleMusic() {
+      if (!audio.paused) {
+        audio.pause();
+      } else {
+        primeEntranceMusic();
+      }
+    }
+
+    function primeEntranceMusic() {
+      audio.muted = false;
+      const playAttempt = audio.play();
+      if (playAttempt) {
+        playAttempt.catch(error => console.warn('Wedding music could not start.', error));
+      }
+    }
+
+    function revealScratchCard(card) {
+      if (card.classList.contains('is-scratched')) return;
+
+      card.classList.add('is-scratched');
+      card.setAttribute('aria-disabled', 'true');
+
+      card.querySelector('.scratch-canvas')?.remove();
+
+      // Unlock ONLY the next card
+      const dateCards = [...document.querySelectorAll('#save-date-cards .save-date-card')];
+      const currentIndex = dateCards.indexOf(card);
+      const nextCard = dateCards[currentIndex + 1];
+
+      if (nextCard) {
+        nextCard.classList.remove('is-locked');
+        nextCard.setAttribute('aria-disabled', 'false');
+
+        // Optional: small visual indication that it is now available
+        nextCard.classList.add('is-unlocked');
+      }
+
+      // All cards completed
+      if (
+        dateCards.length &&
+        dateCards.every(dateCard =>
+          dateCard.classList.contains('is-scratched')
+        )
+      ) {
+        document.body.classList.add('date-revealed');
+
+        document
+          .querySelectorAll('#events-section .reveal-card')
+          .forEach(cardElement =>
+            cardElement.classList.add('is-visible')
+          );
+      }
+    }
+
+    function scratchCountdown(card) {
+      // Only allow the countdown/reveal if this card is currently unlocked
+      if (card.classList.contains('is-locked')) return;
+
+      revealScratchCard(card);
+    }
+
+    function initScratchCards() {
+      const dateCards = [
+        ...document.querySelectorAll('#save-date-cards .save-date-card')
+      ];
+
+      dateCards.forEach((card, index) => {
+        const canvas = card.querySelector('.scratch-canvas');
+        if (!canvas) return;
+
+        // -----------------------------------------
+        // LOCK ALL CARDS EXCEPT THE FIRST ONE
+        // -----------------------------------------
+        if (index === 0) {
+          card.classList.remove('is-locked');
+          card.setAttribute('aria-disabled', 'false');
+        } else {
+          card.classList.add('is-locked');
+          card.setAttribute('aria-disabled', 'true');
+        }
+
+        const ctx = canvas.getContext('2d', {
+          willReadFrequently: true
+        });
+
+        let drawing = false;
+        let lastPoint = null;
+
+        function paintCover() {
+          const rect = canvas.getBoundingClientRect();
+          const scale = Math.min(window.devicePixelRatio || 1, 2);
+
+          canvas.width = Math.max(1, Math.round(rect.width * scale));
+          canvas.height = Math.max(1, Math.round(rect.height * scale));
+
+          ctx.setTransform(scale, 0, 0, scale, 0, 0);
+
+          const gradient = ctx.createRadialGradient(
+            rect.width * 0.28,
+            rect.height * 0.28,
+            4,
+            rect.width * 0.52,
+            rect.height * 0.62,
+            rect.width * 0.9
+          );
+
+          gradient.addColorStop(0, '#fff0ad');
+          gradient.addColorStop(0.28, '#dca437');
+          gradient.addColorStop(0.62, '#9c651e');
+          gradient.addColorStop(1, '#4e2b18');
+
+          ctx.fillStyle = gradient;
+          ctx.fillRect(
+            0,
+            0,
+            rect.width,
+            rect.height
+          );
+
+          for (
+            let i = 0;
+            i < Math.max(40, rect.width * rect.height / 55);
+            i++
+          ) {
+            const x = Math.random() * rect.width;
+            const y = Math.random() * rect.height;
+
+            ctx.beginPath();
+
+            ctx.arc(
+              x,
+              y,
+              0.35 + Math.random() * 1.5,
+              0,
+              Math.PI * 2
+            );
+
+            ctx.fillStyle =
+              Math.random() > 0.48
+                ? 'rgba(255,248,199,.34)'
+                : 'rgba(72,39,14,.24)';
+
+            ctx.fill();
+          }
+
+          ctx.strokeStyle = 'rgba(255,245,187,.42)';
+          ctx.lineWidth = 1;
+
+          ctx.beginPath();
+
+          ctx.arc(
+            rect.width / 2,
+            rect.height / 2,
+            Math.min(rect.width, rect.height) * 0.28,
+            0,
+            Math.PI * 2
+          );
+
+          ctx.stroke();
+
+          ctx.fillStyle = '#fffaf1';
+          ctx.font = '700 8px Montserrat, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+
+          if (currentLang === 'ta') {
+            ctx.font = "700 7px 'Mukta Malar', sans-serif";
+
+            ctx.fillText(
+              'அழித்து',
+              rect.width / 2,
+              rect.height / 2 - 5
+            );
+
+            ctx.fillText(
+              'வெளிப்படுத்தவும்',
+              rect.width / 2,
+              rect.height / 2 + 7
+            );
+          } else {
+            ctx.fillText(
+              'GENTLY SCRATCH',
+              rect.width / 2,
+              rect.height / 2 - 5
+            );
+
+            ctx.fillText(
+              'TO REVEAL',
+              rect.width / 2,
+              rect.height / 2 + 7
+            );
+          }
+        }
+
+        function scratch(event) {
+          // -----------------------------------------
+          // HARD BLOCK FOR LOCKED CARDS
+          // -----------------------------------------
+          if (card.classList.contains('is-locked')) return;
+
+          const rect = canvas.getBoundingClientRect();
+
+          const x = event.clientX - rect.left;
+          const y = event.clientY - rect.top;
+
+          ctx.save();
+
+          ctx.globalCompositeOperation = 'destination-out';
+
+          ctx.beginPath();
+
+          const radius = Math.max(
+            9,
+            rect.width * 0.105
+          );
+
+          if (lastPoint) {
+            ctx.lineWidth = radius * 2;
+            ctx.lineCap = 'round';
+
+            ctx.moveTo(
+              lastPoint.x,
+              lastPoint.y
+            );
+
+            ctx.lineTo(x, y);
+
+            ctx.stroke();
+          } else {
+            ctx.arc(
+              x,
+              y,
+              radius,
+              0,
+              Math.PI * 2
+            );
+
+            ctx.fill();
+          }
+
+          ctx.restore();
+
+          lastPoint = {
+            x,
+            y
+          };
+        }
+
+        function isMostlyScratched() {
+          const pixels = ctx.getImageData(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+          ).data;
+
+          let clear = 0;
+
+          const total = Math.ceil(
+            pixels.length / 4
+          );
+
+          for (
+            let i = 3;
+            i < pixels.length;
+            i += 4
+          ) {
+            if (pixels[i] < 32) {
+              clear++;
+            }
+          }
+
+          return clear / total > 0.28;
+        }
+
+        canvas.addEventListener(
+          'pointerdown',
+          event => {
+            // Never allow interaction with locked cards
+            if (card.classList.contains('is-locked')) {
+              event.preventDefault();
+              return;
+            }
+
+            drawing = true;
+            lastPoint = null;
+
+            canvas.setPointerCapture(
+              event.pointerId
+            );
+
+            scratch(event);
+          }
+        );
+
+        canvas.addEventListener(
+          'pointermove',
+          event => {
+            if (
+              drawing &&
+              !card.classList.contains('is-locked')
+            ) {
+              scratch(event);
+            }
+          }
+        );
+
+        canvas.addEventListener(
+          'pointerup',
+          () => {
+            if (card.classList.contains('is-locked')) {
+              drawing = false;
+              lastPoint = null;
+              return;
+            }
+
+            drawing = false;
+            lastPoint = null;
+
+            if (isMostlyScratched()) {
+              revealScratchCard(card);
+            }
+          }
+        );
+
+        canvas.addEventListener(
+          'pointercancel',
+          () => {
+            drawing = false;
+            lastPoint = null;
+          }
+        );
+
+        canvas.renderCover = paintCover;
+
+        paintCover();
+      });
+    }
+
+    // Two-Way Language Switcher (Initial: English 'en', Switch: Tamil 'ta')
+    let currentLang = 'en';
+    function restoreActionIcons() {
+      document.querySelectorAll('.button-image-icon').forEach(icon => {
+        const action = icon.closest('a');
+        const isLocation = action?.getAttribute('onclick')?.includes('openDirections');
+        icon.src = (isLocation ? '/assets/location.png' : '/assets/calendar.png') + '?v=20260911';
+        icon.width = 19;
+        icon.height = 19;
+        icon.alt = '';
+      });
+    }
+    const navMonogram = document.querySelector('#main-content > nav .font-royal');
+    const crestMonogram = document.querySelector('#crest-button .z-10 .font-royal');
+    if (navMonogram) navMonogram.textContent = 'J & P';
+    if (crestMonogram) crestMonogram.textContent = 'J & P';
+    function toggleLanguage() {
+      currentLang = (currentLang === 'en') ? 'ta' : 'en';
+      document.getElementById('lang-btn-label').innerText = (currentLang === 'en') ? 'தமிழ்' : 'Eng';
+
+      document.querySelectorAll('.lang-text').forEach(el => {
+        const text = el.getAttribute(`data-${currentLang}`);
+        if (text) {
+          if (el.dataset.html === 'true') {
+            el.innerHTML = text;
+          } else {
+            el.innerText = text;
+          }
+        }
+      });
+      document.getElementById('crest-title').textContent = currentLang === 'en'
+        ? 'JAYABHARATHI WEDS PRITHIKA'
+        : 'ஜெயபாரதி வெட்ஸ் பிரிதிகா';
+      document.querySelectorAll('.scratch-canvas').forEach(canvas => canvas.renderCover?.());
+      const navMonogram = document.querySelector('#main-content > nav .font-royal');
+      if (navMonogram) navMonogram.textContent = currentLang === 'en' ? 'J & P' : 'ஜெ&பி';
+      const crestMonogram = document.querySelector('#crest-button .z-10 .font-royal');
+      if (crestMonogram) crestMonogram.textContent = currentLang === 'en' ? 'J & P' : 'ஜெ&பி';
+    }
+
+    // Light Portal Reveal Entrance Trigger
+    function openInvitation() {
+      const overlay = document.getElementById("intro-overlay");
+      const crestBtn = document.getElementById("crest-button");
+      const main = document.getElementById("main-content");
+
+      // Reset both the iframe and the containing page before opening the invitation.
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      try { window.top.scrollTo(0, 0); } catch { }
+
+      // Trigger audio within the tap/click gesture required by iOS and Android.
+      primeEntranceMusic();
+
+      // Expand Light Portal Animation
+      crestBtn.classList.add("portal-opening");
+
+      setTimeout(() => {
+        overlay.classList.add("opacity-0", "pointer-events-none");
+        setTimeout(() => {
+          overlay.style.display = "none";
+          main.classList.remove("opacity-0");
+          initFlowerCanvas();
+          initPetalRain();
+        }, 600);
+      }, 600);
+    }
+
+    // Blooming Petals Canvas
+    function initFlowerCanvas() {
+      const canvas = document.getElementById('flower-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = canvas.parentElement.clientWidth;
+      canvas.height = canvas.parentElement.clientHeight;
+
+      let petalProgress = 0;
+      function drawPetals() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const numPetals = 8;
+
+        ctx.save();
+        ctx.translate(centerX, centerY);
+
+        for (let i = 0; i < numPetals; i++) {
+          ctx.rotate((Math.PI * 2) / numPetals);
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.quadraticCurveTo(20, -40 * petalProgress, 0, -70 * petalProgress);
+          ctx.quadraticCurveTo(-20, -40 * petalProgress, 0, 0);
+          ctx.fillStyle = `rgba(183, 127, 121, ${0.22 + petalProgress * 0.35})`;
+          ctx.fill();
+          ctx.strokeStyle = '#C49A62';
+          ctx.stroke();
+        }
+
+        ctx.beginPath();
+        ctx.arc(0, 0, 12 * petalProgress, 0, Math.PI * 2);
+        ctx.fillStyle = '#C49A62';
+        ctx.fill();
+
+        ctx.restore();
+
+        if (petalProgress < 1) {
+          petalProgress += 0.015;
+          requestAnimationFrame(drawPetals);
+        }
+      }
+      drawPetals();
+    }
+
+    let petalRainStarted = false;
+    function initPetalRain() {
+      if (petalRainStarted || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      petalRainStarted = true;
+      const canvas = document.getElementById('petal-rain-canvas');
+      const ctx = canvas.getContext('2d');
+      const petals = Array.from({ length: 54 }, () => ({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight - window.innerHeight,
+        size: 5 + Math.random() * 7,
+        speed: .45 + Math.random() * .85,
+        drift: .25 + Math.random() * .65,
+        phase: Math.random() * Math.PI * 2,
+        rotation: Math.random() * Math.PI * 2,
+        spin: (Math.random() - .5) * .045,
+        color: Math.random() > .35 ? 'rgba(217,170,160,.76)' : 'rgba(227,200,155,.76)'
+      }));
+
+      function resize() {
+        const ratio = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = window.innerWidth * ratio;
+        canvas.height = window.innerHeight * ratio;
+        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      }
+      function fall() {
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        petals.forEach(petal => {
+          petal.y += petal.speed;
+          petal.phase += .012;
+          petal.x += Math.sin(petal.phase) * petal.drift;
+          petal.rotation += petal.spin;
+          if (petal.y > window.innerHeight + petal.size) {
+            petal.y = -petal.size;
+            petal.x = Math.random() * window.innerWidth;
+          }
+          ctx.save();
+          ctx.translate(petal.x, petal.y);
+          ctx.rotate(petal.rotation);
+          ctx.fillStyle = petal.color;
+          ctx.beginPath();
+          ctx.ellipse(0, 0, petal.size * .48, petal.size, Math.PI / 5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        });
+        requestAnimationFrame(fall);
+      }
+      resize();
+      window.addEventListener('resize', resize, { passive: true });
+      fall();
+    }
+
+    initScratchCards();
+    restoreActionIcons();
+    new MutationObserver(restoreActionIcons).observe(document.body, { childList: true, subtree: true });
+
+    // RSVP Controls
+    function openRSVP() {
+      const form = document.getElementById("rsvp-form");
+      const submitButton = form.querySelector('button[type="submit"]');
+      submitButton.disabled = false;
+      submitButton.textContent = currentLang === 'ta' ? 'வருகையை உறுதிசெய்க' : 'Confirm RSVP';
+      form.classList.remove("hidden");
+      document.getElementById("rsvp-success").classList.add("hidden");
+      document.getElementById("rsvp-modal").classList.remove("hidden");
+      document.getElementById("rsvp-modal").classList.add("flex");
+    }
+    function closeRSVP() {
+      document.getElementById("rsvp-modal").classList.add("hidden");
+      document.getElementById("rsvp-modal").classList.remove("flex");
+    }
+    function handleRSVP(e) {
+      e.preventDefault();
+      alert((currentLang === 'en') ? "Thank you! Your RSVP has been confirmed." : "நன்றி! உங்கள் வருகை உறுதி செய்யப்பட்டது.");
+      closeRSVP();
+    }
+    // Modern RSVP controls: one complete record and one pass for every attendee.
+    const RSVP_ARRIVAL_DATES = [
+      { value: '2026-11-10', label: '10 November 2026' },
+      { value: '2026-11-11', label: '11 November 2026' }
+    ];
+
+    function rsvpCopy(english, tamil) {
+      return currentLang === 'ta' ? tamil : english;
+    }
+
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>"']/g, character => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[character]);
+    }
+
+    function getRsvpModal() {
+      return document.getElementById('rsvp-modal');
+    }
+
+    function getRenderedRsvpGuests() {
+      const modal = getRsvpModal();
+      if (!modal) return [];
+      return Array.from(modal.querySelectorAll('.rsvp-guest')).map(card => ({
+        name: card.querySelector('[data-guest-name]')?.value.trim() || '',
+        gender: card.querySelector('[data-guest-gender]')?.value || '',
+        arrivalDate: card.querySelector('[data-guest-arrival]')?.value || ''
+      }));
+    }
+
+    function renderRsvpGuests(previousGuests) {
+      const modal = getRsvpModal();
+      if (!modal) return;
+      const partySize = Number(modal.querySelector('#rsvp-party-size')?.value || 1);
+      const guestList = modal.querySelector('#rsvp-guest-list');
+      const guests = previousGuests || getRenderedRsvpGuests();
+      if (!guestList) return;
+
+      guestList.innerHTML = Array.from({ length: partySize }, (_, index) => {
+        const guest = guests[index] || {};
+        const genderOptions = [
+          ['', rsvpCopy('Select gender', 'பாலினத்தைத் தேர்ந்தெடுக்கவும்')],
+          ['Male', rsvpCopy('Male', 'ஆண்')],
+          ['Female', rsvpCopy('Female', 'பெண்')],
+          ['Other', rsvpCopy('Other', 'மற்றவை')]
+        ].map(option => '<option value="' + option[0] + '"' + (guest.gender === option[0] ? ' selected' : '') + (option[0] ? '' : ' disabled') + '>' + option[1] + '</option>').join('');
+        const arrivalOptions = RSVP_ARRIVAL_DATES.map(option => '<option value="' + option.value + '"' + (guest.arrivalDate === option.value ? ' selected' : '') + '>' + option.label + '</option>').join('');
+
+        return '<fieldset class="rsvp-guest">' +
+          '<legend class="rsvp-guest-title">' + rsvpCopy('Guest ', 'விருந்தினர் ') + (index + 1) + '</legend>' +
+          '<div class="rsvp-guest-fields">' +
+          '<input data-guest-name type="text" required maxlength="100" autocomplete="name" value="' + escapeHtml(guest.name) + '" placeholder="' + rsvpCopy('Full name', 'முழுப் பெயர்') + '" aria-label="' + rsvpCopy('Guest ', 'விருந்தினர் ') + (index + 1) + ' ' + rsvpCopy('full name', 'முழுப் பெயர்') + '">' +
+          '<select data-guest-gender required aria-label="' + rsvpCopy('Guest ', 'விருந்தினர் ') + (index + 1) + ' ' + rsvpCopy('gender', 'பாலினம்') + '">' + genderOptions + '</select>' +
+          '<select data-guest-arrival class="rsvp-arrival" required aria-label="' + rsvpCopy('Guest ', 'விருந்தினர் ') + (index + 1) + ' ' + rsvpCopy('arrival date', 'வருகை தேதி') + '">' + arrivalOptions + '</select>' +
+          '</div>' +
+          '</fieldset>';
+      }).join('');
+    }
+
+    function showRsvpError(message) {
+      const error = getRsvpModal()?.querySelector('#rsvp-error');
+      if (!error) return;
+      error.textContent = message;
+      error.classList.remove('hidden');
+    }
+
+    function clearRsvpError() {
+      const error = getRsvpModal()?.querySelector('#rsvp-error');
+      if (!error) return;
+      error.textContent = '';
+      error.classList.add('hidden');
+    }
+
+    function openRSVP() {
+      const modal = getRsvpModal();
+      if (!modal) return;
+      const form = modal.querySelector('#rsvp-form');
+      const partySize = modal.querySelector('#rsvp-party-size');
+      modal.querySelector('#rsvp-form-panel')?.classList.remove('hidden');
+      modal.querySelector('#rsvp-success')?.classList.add('hidden');
+      form?.reset();
+      if (partySize) partySize.value = '1';
+      clearRsvpError();
+      renderRsvpGuests([]);
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      setTimeout(() => modal.querySelector('[data-guest-name]')?.focus(), 30);
+    }
+
+    function closeRSVP() {
+      const modal = getRsvpModal();
+      if (!modal) return;
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      clearRsvpError();
+    }
+
+    function renderGoldenTickets(guests) {
+      const list = getRsvpModal()?.querySelector('#golden-ticket-list');
+      if (!list) return;
+      list.innerHTML = guests.map((guest, index) => {
+        const arrival = RSVP_ARRIVAL_DATES.find(option => option.value === guest.arrivalDate)?.label || guest.arrivalDate;
+        return '<article class="golden-ticket">' +
+          '<p class="ticket-kicker">' + escapeHtml(rsvpCopy('Wedding Golden Pass', 'திருமண தங்கப் பாஸ்')) + '</p>' +
+          '<p class="ticket-name">' + escapeHtml(guest.name) + '</p>' +
+          '<p class="ticket-meta">' + escapeHtml(guest.gender) + ' &bull; ' + escapeHtml(arrival) + '</p>' +
+          '<button type="button" class="ticket-download" data-ticket-index="' + index + '">' + escapeHtml(rsvpCopy('Download my pass', 'என் பாஸைப் பதிவிறக்கவும்')) + '</button>' +
+          '</article>';
+      }).join('');
+      list.querySelectorAll('.ticket-download').forEach(button => {
+        button.addEventListener('click', () => downloadGoldenTicket(guests[Number(button.dataset.ticketIndex)]));
+      });
+    }
+
+    function downloadGoldenTicket(guest) {
+      if (!guest) return;
+      const arrival = RSVP_ARRIVAL_DATES.find(option => option.value === guest.arrivalDate)?.label || guest.arrivalDate;
+      const canvas = document.createElement('canvas');
+      canvas.width = 1600;
+      canvas.height = 900;
+      const context = canvas.getContext('2d');
+      const gold = context.createLinearGradient(0, 0, canvas.width, canvas.height);
+      gold.addColorStop(0, '#fff4bd');
+      gold.addColorStop(.28, '#d79a2e');
+      gold.addColorStop(.54, '#fff7cc');
+      gold.addColorStop(1, '#a86d10');
+      context.fillStyle = gold;
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.strokeStyle = 'rgba(73, 42, 6, .78)';
+      context.lineWidth = 10;
+      context.strokeRect(42, 42, canvas.width - 84, canvas.height - 84);
+      context.strokeStyle = 'rgba(255, 255, 234, .72)';
+      context.lineWidth = 3;
+      context.strokeRect(65, 65, canvas.width - 130, canvas.height - 130);
+      context.fillStyle = '#4a2b0c';
+      context.textAlign = 'center';
+      context.font = '700 38px Montserrat, sans-serif';
+      context.fillText('JAYABHARATHI & PRITHIKA', canvas.width / 2, 160);
+      context.font = '700 28px Montserrat, sans-serif';
+      context.fillText('WEDDING GOLDEN PASS', canvas.width / 2, 215);
+      context.font = 'italic 68px Cormorant Garamond, serif';
+      context.fillText('A surprise awaits you', canvas.width / 2, 320);
+      context.font = '700 84px Cormorant Garamond, serif';
+      context.fillText(guest.name, canvas.width / 2, 470);
+      context.font = '600 32px Montserrat, sans-serif';
+      context.fillText('Gender: ' + guest.gender, canvas.width / 2, 555);
+      context.fillText('Arrival: ' + arrival, canvas.width / 2, 610);
+      context.font = '700 30px Montserrat, sans-serif';
+      context.fillText('SAVE THIS PASS TO REDEEM YOUR SURPRISE', canvas.width / 2, 735);
+      context.font = '600 24px Montserrat, sans-serif';
+      context.fillText('11 NOVEMBER 2026  •  SRI UMIYA MAHAL', canvas.width / 2, 790);
+
+      const saveTicket = blob => {
+        if (!blob) return;
+        const link = document.createElement('a');
+        const safeName = (guest.name || 'guest').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase();
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.download = (safeName || 'guest') + '-golden-pass.png';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      };
+      if (canvas.toBlob) {
+        canvas.toBlob(saveTicket, 'image/png');
+      } else {
+        fetch(canvas.toDataURL('image/png')).then(response => response.blob()).then(saveTicket);
+      }
+    }
+
+    async function submitRSVP(event) {
+      event.preventDefault();
+      const modal = getRsvpModal();
+      const submitButton = modal?.querySelector('#rsvp-submit');
+      const guests = getRenderedRsvpGuests();
+      const validArrivalDates = new Set(RSVP_ARRIVAL_DATES.map(option => option.value));
+      const hasInvalidGuest = !guests.length || guests.some(guest => !guest.name || !['Male', 'Female', 'Other'].includes(guest.gender) || !validArrivalDates.has(guest.arrivalDate));
+
+      clearRsvpError();
+      if (hasInvalidGuest) {
+        showRsvpError(rsvpCopy('Please complete the name, gender, and arrival date for every guest.', 'ஒவ்வொரு விருந்தினருக்கும் பெயர், பாலினம் மற்றும் வருகை தேதியை நிரப்பவும்.'));
+        modal?.querySelector('[data-guest-name]:invalid, [data-guest-gender]:invalid, [data-guest-arrival]:invalid')?.focus();
+        return;
+      }
+
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = rsvpCopy('Saving...', 'சேமிக்கப்படுகிறது...');
+      }
+      try {
+        const response = await fetch('/.netlify/functions/rsvp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ guests: guests })
+        });
+        let responseBody = {};
+        try {
+          responseBody = await response.json();
+        } catch { }
+        if (!response.ok) throw new Error(responseBody.error || 'Unable to save RSVP.');
+
+        const savedGuests = Array.isArray(responseBody.guests) ? responseBody.guests : guests;
+        renderGoldenTickets(savedGuests);
+        modal?.querySelector('#rsvp-form-panel')?.classList.add('hidden');
+        modal?.querySelector('#rsvp-success')?.classList.remove('hidden');
+        if (typeof confetti === 'function') {
+          confetti({ particleCount: 90, spread: 65, origin: { y: .62 }, colors: ['#c49a62', '#fff4bd', '#5a2528'] });
+        }
+      } catch (error) {
+        showRsvpError(error instanceof Error && error.message === 'RSVP collection has not been configured.'
+          ? rsvpCopy('RSVP is not configured yet. Please contact the couple.', 'RSVP இன்னும் அமைக்கப்படவில்லை. தயவுசெய்து மணமக்களைத் தொடர்புகொள்ளவும்.')
+          : rsvpCopy('We could not save your RSVP right now. Please try again.', 'உங்கள் RSVP-ஐ இப்போது சேமிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.'));
+      } finally {
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = rsvpCopy('Confirm RSVP', 'வருகையை உறுதிசெய்க');
+        }
+      }
+    }
+
+    const rsvpPartySize = getRsvpModal()?.querySelector('#rsvp-party-size');
+    rsvpPartySize?.addEventListener('change', () => renderRsvpGuests(getRenderedRsvpGuests()));
+    renderRsvpGuests([]);
+  </script>
+</body>
+
+</html>

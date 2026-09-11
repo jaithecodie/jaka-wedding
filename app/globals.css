@@ -1,0 +1,49 @@
+:root {
+  color-scheme: light;
+  --silk: #f4eee3;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  min-height: 100%;
+  background: var(--silk);
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+}
+
+@supports (overflow: clip) {
+  html,
+  body {
+    overflow-x: clip;
+  }
+}
+
+.wedding-shell {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100svh;
+  background: var(--silk);
+  overflow-x: hidden;
+}
+
+.wedding-frame {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: 100svh;
+  min-height: 100svh;
+  border: 0;
+  background: var(--silk);
+}
+
+/* Hide the Next.js development indicator from the invitation experience. */
+nextjs-portal {
+  display: none !important;
+}
